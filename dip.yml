@@ -2,13 +2,13 @@ version: '7.1'
 
 # Define default environment variables to pass
 # to Docker Compose
-# environment:
-#  RAILS_ENV: development
+environment:
+  RAILS_ENV: development
 
 compose:
   files:
     - .dockerdev/compose.yml
-  project_name: tramwayproject
+  project_name: base_project
 
 interaction:
   # This command spins up a Rails container with the required dependencies (such as databases),
@@ -31,6 +31,13 @@ interaction:
     service: rails
     command: bundle
     compose_run_options: [ no-deps ]
+    subcommands:
+      install:
+        description: Run `bundle install`
+        command: bundle install
+      update:
+        description: Run `bundle update`
+        command: bundle update
 
   rails:
     description: Run Rails commands
@@ -42,24 +49,52 @@ interaction:
         service: web
         compose:
           run_options: [ service-ports, use-aliases ]
+      jobs:
+        description: Run SolidQueue worker
+        service: jobs
+        command: bundle exec rails solid_queue:start
       test:
-        description: Run unit tests
+        description: Run RSpec tests
         service: rails
-        command: bundle exec rails test
+        command: bundle exec rspec
         environment:
           RAILS_ENV: test
+
+  rspec:
+    description: Run RSpec unit tests for the Rails application
+    service: rspec
+    command: bundle exec rspec
+    environment:
+      RAILS_ENV: test
 
   psql:
     description: Run Postgres psql console
     service: postgres
-    default_args: tramwayproject_development
+    default_args: timelog_development
     command: psql -h postgres -U postgres
 
-provision:
-  - '[[ "$RESET_DOCKER" == "true" ]] && echo "Re-creating the Docker env from scratch..." && dip compose down --volumes || echo "Re-provisioning the Docker env..."'
-  - dip compose up -d postgres
-  - dip bundle check || dip bundle install
-  - dip rails db:prepare
-  - dip rails db:test:prepare
-  - echo "🚀 Ready to rock! Run 'dip rails s' to start a Rails web server or 'dip ' to run tests."
+  rubocop:
+    description: Run Rubocop
+    service: rails
+    command: bundle exec rubocop -c .rubocop.yml
+    subcommands:
+      syntax:
+        command: bundle exec rubocop --only Lint/Syntax -c .rubocop.yml
+        description: Run Rubocop syntax check
+      fix:
+        command: bundle exec rubocop -A -c .rubocop.yml
+        description: Rubocop autofix
 
+  importmap:
+    description: Run Importmap
+    service: rails
+    command: bin/importmap
+
+provision:
+  # We need the `|| true` part because some docker-compose versions
+  # cannot down a non-existent container without an error,
+  # see https://github.com/docker/compose/issues/9426
+  - dip compose down --volumes || true
+  - dip compose up -d postgres
+  - dip bash -c bin/setup
+  - RAILS_ENV=test dip rails db:create db:migrate

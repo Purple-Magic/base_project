@@ -25,6 +25,8 @@ module TramwayProject
     # config.eager_load_paths << Rails.root.join("extras")
     config.generators do |g|
       g.template_engine :haml
+      g.test_framework :rspec
+      g.system_tests nil
     end
   end
 end

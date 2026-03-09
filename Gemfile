@@ -54,6 +54,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # RSpec as the only test framework
+  gem "rspec-rails"
 end
 
 group :development do
@@ -67,4 +70,5 @@ group :test do
   gem "selenium-webdriver"
 end
 
+# Use PostgreSQL as the database for Active Record
 gem "pg", "~> 1.6"
