@@ -1,0 +1,42 @@
+name: Deploy production
+
+on:
+  release:
+    types:
+      - created
+
+concurrency:
+  group: production
+  cancel-in-progress: true
+
+jobs:
+  ci_checks:
+    name: CI checks
+    uses: ./.github/workflows/ci.yml
+    with:
+      run_tests: false
+      run_end_to_end: false
+    secrets: inherit
+
+  deploy_production:
+    name: Deploy Production
+    needs:
+      - ci_checks
+    uses: ./.github/workflows/deploy.yml
+    with:
+      branch: ${{ github.ref }}
+      environment: production
+      RAILS_ENV: production
+      success_title: '🎉 Release ${{ github.event.release.name }} deployed to Production'
+      success_description: '${{ github.event.release.body }}'
+      success_color: 3066993
+      failure_title: 'Deploy to Server failed'
+      failure_description: '⚠️ Deploy to Server failed for Release: ${{ github.event.release.name }}'
+      failure_color: 15158332
+      link: '${{ github.event.release.html_url }}'
+      first_field: 'Release'
+      first_value: '[${{ github.event.release.tag_name }}](${{ github.event.release.html_url }})'
+      second_field: 'Link'
+      second_value: 'https://rails.purple-magic.com'
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}

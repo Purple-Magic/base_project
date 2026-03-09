@@ -1,0 +1,21 @@
+name: "End-to-End Tests"
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        type: string
+        required: true
+      branch:
+        type: string
+        required: true
+
+jobs:
+  all:
+    name: All
+    uses: ./.github/workflows/e2e.yml
+    with:
+      name: Web
+      branch: ${{ inputs.branch }}
+      part: spec/
+    secrets: inherit

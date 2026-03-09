@@ -1,0 +1,142 @@
+on:
+  workflow_call:
+    inputs:
+      branch:
+        type: string
+        required: true
+      part:
+        type: string
+        required: true
+      name:
+        type: string
+        required: true
+
+jobs:
+  test:
+    name: ${{ inputs.name }}
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_USER: rails
+          POSTGRES_PASSWORD: password
+      chrome:
+        image: seleniarm/standalone-chromium:latest
+        volumes:
+          - /dev/shm:/dev/shm
+        ports:
+          - "4444:4444"
+          - '7900:7900'
+        env:
+          SCREEN_WIDTH: 1920
+          SCREEN_HEIGHT: 1080
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: "postgres://rails:password@localhost:5432"
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: rails
+      DB_PASSWORD: password
+      HUB_URL: "http://localhost:4444/wd/hub"
+      WEB_CONCURRENCY: 1
+      RAILS_MAX_THREADS: 1
+      PUMA_THREADS: "1:1"
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+      REDIS_URL: "redis://localhost:6379/0"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Load secrets from 1Password
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          DISCORD_WEBHOOK_URL: op://base_project/Deployment/DISCORD_WEBHOOK_URL
+
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # - name: Install libvips
+      #   run: sudo apt-get update && sudo apt-get install -y libvips
+
+      - name: Prepare Database
+        run: |
+          bundle exec rake db:create
+          bundle exec rake db:test:prepare
+
+      - name: Precompile assets
+        run: bin/rails assets:precompile RAILS_ENV=test
+
+      - name: Run RSpec
+        run: |
+          set -o pipefail
+          bundle exec rspec ${{ inputs.part }} | tee e2e.log
+
+      - name: Collect failing tests
+        if: failure()
+        id: failing_tests
+        run: |
+          ruby .github/scripts/extract_test_failures.rb e2e.log > failing_tests.txt
+
+          if [ -s failing_tests.txt ]; then
+            {
+              echo "names<<'EOF'"
+              cat failing_tests.txt
+              echo EOF
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "names=Unable to detect failing tests. Check the workflow logs for details." >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Discord test success notification
+        if: success()
+        env:
+          WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+          TITLE: "✅ End-to-End Tests Passed"
+          COLOR: "5763719"
+          URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FIRST_FIELD: "Workflow"
+          FIRST_VALUE: ${{ github.workflow }}
+          SECOND_FIELD: "Commit"
+          SECOND_VALUE: ${{ github.sha }}
+          NOTIFICATION_CONTEXT: tests
+          NOTIFICATION_STATUS: success
+          TEST_SUITE_LABEL: "End-to-end tests"
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+          PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          SERVER_URL: ${{ github.server_url }}
+          REPOSITORY: ${{ github.repository }}
+        run: ruby .github/scripts/discord_notification.rb
+
+      - name: Discord test failure notification
+        if: failure()
+        env:
+          WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+          TITLE: "❌ End-to-End Tests Failed"
+          COLOR: "15548997"
+          URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FIRST_FIELD: "Workflow"
+          FIRST_VALUE: ${{ github.workflow }}
+          SECOND_FIELD: "Commit"
+          SECOND_VALUE: ${{ github.sha }}
+          NOTIFICATION_CONTEXT: tests
+          NOTIFICATION_STATUS: failure
+          TEST_SUITE_LABEL: "End-to-end tests"
+          FAILING_TESTS: ${{ steps.failing_tests.outputs.names }}
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+          PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          SERVER_URL: ${{ github.server_url }}
+          REPOSITORY: ${{ github.repository }}
+        run: ruby .github/scripts/discord_notification.rb

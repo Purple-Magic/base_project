@@ -70,7 +70,7 @@ interaction:
   psql:
     description: Run Postgres psql console
     service: postgres
-    default_args: timelog_development
+    default_args: base_project_development
     command: psql -h postgres -U postgres
 
   rubocop:

@@ -1,9 +1,17 @@
 name: CI
 
 on:
-  pull_request:
-  push:
-    branches: [ main ]
+  workflow_call:
+    inputs:
+      run_tests:
+        required: false
+        type: boolean
+        default: true
+      run_end_to_end:
+        required: false
+        type: boolean
+        default: true
+  workflow_dispatch:
 
 jobs:
   scan_ruby:
@@ -11,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -29,7 +37,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -45,7 +53,7 @@ jobs:
       RUBOCOP_CACHE_ROOT: tmp/rubocop
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -66,63 +74,119 @@ jobs:
         run: bin/rubocop -f github
 
   test:
+    if: ${{ github.event_name != 'workflow_call' || inputs.run_tests }}
     runs-on: ubuntu-latest
+    needs:
+      - scan_ruby
+      - scan_js
+      - lint
+    env:
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
 
-    # services:
-    #  redis:
-    #    image: valkey/valkey:8
-    #    ports:
-    #      - 6379:6379
-    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev
+
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+
+      - name: Load secrets from 1Password
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          DISCORD_WEBHOOK_URL: op://base_project/Deployment/DISCORD_WEBHOOK_URL
 
       - name: Run tests
         env:
           RAILS_ENV: test
-          # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-          # REDIS_URL: redis://localhost:6379/0
         run: |
-          bin/rails db:prepare
-          bundle exec rspec
+          set -o pipefail
+          bin/rails db:test:prepare test | tee test.log
 
-  system-test:
-    runs-on: ubuntu-latest
-
-    # services:
-    #  redis:
-    #    image: valkey/valkey:8
-    #    ports:
-    #      - 6379:6379
-    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-
-      - name: Run System Tests
-        env:
-          RAILS_ENV: test
-          # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-          # REDIS_URL: redis://localhost:6379/0
-        run: |
-          bin/rails db:prepare
-          bundle exec rspec spec/system
-
-      - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v4
+      - name: Collect failing tests
         if: failure()
-        with:
-          name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
-          if-no-files-found: ignore
+        id: failing_tests
+        run: |
+          ruby .github/scripts/extract_test_failures.rb test.log > failing_tests.txt
+
+          if [ -s failing_tests.txt ]; then
+            {
+              echo "names<<'EOF'"
+              cat failing_tests.txt
+              echo EOF
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "names=Unable to detect failing tests. Check the workflow logs for details." >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Discord test success notification
+        if: success()
+        env:
+          WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+          TITLE: "✅ Tests Passed"
+          COLOR: "5763719"
+          URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FIRST_FIELD: "Workflow"
+          FIRST_VALUE: ${{ github.workflow }}
+          SECOND_FIELD: "Commit"
+          SECOND_VALUE: ${{ github.sha }}
+          NOTIFICATION_CONTEXT: tests
+          NOTIFICATION_STATUS: success
+          TEST_SUITE_LABEL: "CI tests"
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+          PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          SERVER_URL: ${{ github.server_url }}
+          REPOSITORY: ${{ github.repository }}
+        run: ruby .github/scripts/discord_notification.rb
+
+      - name: Discord test failure notification
+        if: failure()
+        env:
+          WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+          TITLE: "❌ Tests Failed"
+          COLOR: "15548997"
+          URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FIRST_FIELD: "Workflow"
+          FIRST_VALUE: ${{ github.workflow }}
+          SECOND_FIELD: "Commit"
+          SECOND_VALUE: ${{ github.sha }}
+          NOTIFICATION_CONTEXT: tests
+          NOTIFICATION_STATUS: failure
+          TEST_SUITE_LABEL: "CI tests"
+          FAILING_TESTS: ${{ steps.failing_tests.outputs.names }}
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+          PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          SERVER_URL: ${{ github.server_url }}
+          REPOSITORY: ${{ github.repository }}
+        run: ruby .github/scripts/discord_notification.rb
+
+  end_to_end_tests:
+    if: ${{ inputs.run_tests && inputs.run_end_to_end }}
+    name: End-to-End Tests
+    uses: ./.github/workflows/run_e2e.yml
+    needs: test
+    with:
+      name: RSpec
+      branch: ${{ github.ref }}
+    secrets: inherit
