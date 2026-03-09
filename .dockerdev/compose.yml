@@ -9,7 +9,6 @@ x-app: &app
   environment: &env
     RAILS_ENV: ${RAILS_ENV:-}
   tmpfs:
-    - /tmp
     - ${PWD}/tmp/pids
 
 x-backend: &backend
@@ -26,7 +25,6 @@ x-backend: &backend
     - ./.bashrc:/root/.bashrc:ro
   environment: &backend_environment
     <<: *env
-    DATABASE_URL: postgresql://postgres:postgres@postgres:5432
     MALLOC_ARENA_MAX: 2
     WEB_CONCURRENCY: ${WEB_CONCURRENCY:-1}
     BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap

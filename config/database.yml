@@ -1,40 +1,88 @@
-# SQLite. Versions 3.8.0 and up are supported.
-#   gem install sqlite3
-#
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem "sqlite3"
-#
 default: &default
-  adapter: sqlite3
-  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  timeout: 5000
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+
+development_default: &development_default
+  <<: *default
+  host: postgres
+  username: postgres
+  password: postgres
 
 development:
-  <<: *default
-  database: storage/development.sqlite3
+  primary:
+  <<: *development_default
+    database: base_project_development
+  queue:
+    <<: *development_default
+    database: base_project_queue_development
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *development_default
+    database: base_project_cache_development
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *development_default
+    database: base_project_cable_development
+    migrations_paths: db/cable_migrate
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
+test_default: &test_default
+  <<: *default
+  host: <%= ENV.fetch("DB_HOST") { ENV["GITHUB_ACTIONS"] ? "localhost" : "postgres" } %>
+  username: <%= ENV.fetch("DB_USERNAME") { "postgres" } %>
+  password: <%= ENV.fetch("DB_PASSWORD") { "postgres" } %>
+
 test:
-  <<: *default
-  database: storage/test.sqlite3
+  primary:
+    <<: *test_default
+    database: base_project_test_<%= ENV.fetch('TEST_ENV_NUMBER') { 1 } %>
+  cache:
+    <<: *test_default
+    database: base_project_test_cache
+    migrations_paths: db/cache_migrate
 
-# Store production database in the storage/ directory, which by default
-# is mounted as a persistent Docker volume in config/deploy.yml.
+production_default: &production_default
+  <<: *default
+  host: <%= ENV['DB_HOST'] %>
+  username: <%= ENV['POSTGRES_USER'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
+
 production:
   primary:
-    <<: *default
-    database: storage/production.sqlite3
-  cache:
-    <<: *default
-    database: storage/production_cache.sqlite3
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *default
-    database: storage/production_queue.sqlite3
-    migrations_paths: db/queue_migrate
+    <<: *production_default
+    database: <%= ENV['POSTGRES_DB_PRIMARY'] %>
   cable:
-    <<: *default
-    database: storage/production_cable.sqlite3
+    <<: *production_default
+    database: <%= ENV['POSTGRES_DB_CABLE'] %>
     migrations_paths: db/cable_migrate
+  queue:
+    <<: *production_default
+    database: <%= ENV['POSTGRES_DB_QUEUE'] %>
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *production_default
+    database: <%= ENV['POSTGRES_DB_CACHE'] %>
+    migrations_paths: db/cache_migrate
+
+staging_default: &staging_default
+  <<: *default
+  host: <%= ENV['DB_HOST'] %>
+  username: <%= ENV['POSTGRES_USER'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
+
+staging:
+  primary:
+    <<: *staging_default
+    database: <%= ENV['POSTGRES_DB_PRIMARY'] %>
+  cable:
+    <<: *staging_default
+    database: <%= ENV['POSTGRES_DB_CABLE'] %>
+    migrations_paths: db/cable_migrate
+  queue:
+    <<: *staging_default
+    database: <%= ENV['POSTGRES_DB_QUEUE'] %>
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *staging_default
+    database: <%= ENV['POSTGRES_DB_CACHE'] %>
+    migrations_paths: db/cache_migrate
