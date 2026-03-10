@@ -1,0 +1,18 @@
+= tramway_container do
+  .space-y-8.py-10
+    = tramway_title text: 'Chats'
+
+    - if @chats.empty?
+      %p.text-sm.text-slate-600 No chats available yet.
+    - else
+      = tramway_table do
+        = tramway_header headers: ['Name', 'Members', 'Created']
+
+        - @chats.each do |chat|
+          = tramway_row href: chat.show_path do
+            = tramway_cell do
+              %span.font-medium.text-slate-900= chat.title
+            = tramway_cell do
+              = pluralize(chat.members_count, 'member')
+            = tramway_cell do
+              = l(chat.created_at, format: :long)

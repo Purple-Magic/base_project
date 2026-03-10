@@ -33,7 +33,7 @@ x-backend: &backend
     PSQL_HISTFILE: /usr/local/hist/.psql_history
     IRB_HISTFILE: /usr/local/hist/.irb_history
     EDITOR: vi
-  depends_on:
+  depends_on: &backend_depends_on
     postgres:
       condition: service_healthy
 
@@ -41,12 +41,24 @@ services:
   rails:
     <<: *backend
     command: bundle exec rails
+    depends_on:
+      <<: *backend_depends_on
+      tailwind:
+        condition: service_started
 
   web:
     <<: *backend
     command: bundle exec rails server -b 0.0.0.0
     ports:
       - '3000:3000'
+
+  tailwind:
+    <<: *backend
+    command: >
+      /bin/sh -lc "command -v entr >/dev/null || (apt-get update -qq && apt-get install -y entr) &&
+      bin/rails tailwindcss:build &&
+      find config/tailwind.config.js public/*.html app/components app/helpers app/javascript app/views -type f
+      | entr -r bin/rails tailwindcss:build"
 
   postgres:
     image: postgres:17

@@ -67,6 +67,7 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem "factory_bot_rails"
   gem "selenium-webdriver"
 end
 
@@ -81,3 +82,4 @@ gem "view_component"
 gem 'dry-initializer'
 gem 'dry-monads'
 
+gem "tailwindcss-rails", "~> 4.4"
