@@ -23,4 +23,10 @@
     = javascript_importmap_tags
 
   %body
-    = yield
+    = tramway_main_container do
+      - if flash.any?
+        = tramway_flash text: flash[:notice].presence || flash[:alert],
+          type: flash[:notice].present? ? :will : :rage,
+          id: 'flash-container'
+
+      = yield

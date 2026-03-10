@@ -10,6 +10,10 @@
 # Ignore all environment files.
 /.env*
 
+# Ignore all default key files.
+/config/master.key
+/config/credentials/*.key
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
@@ -28,8 +32,10 @@
 !/tmp/storage/
 !/tmp/storage/.keep
 
-/public/assets
-
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Ignore assets.
+/app/assets/builds/*
+!/app/assets/builds/.keep
+/public/assets
