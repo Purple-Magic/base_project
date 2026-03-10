@@ -3,11 +3,13 @@
 ### Command Execution
 
 #### dip
+
 Run all Ruby, Rails, Bundler, RSpec, and rake commands with `dip` by default. Use another command style only when the user explicitly asks for it.
 
 ### Data permissions
 
 #### uuid
+
 Don't use `id` as a parameter for any request, except for `admin` namespace. Use `uuid` instead. If you need to show some record on the page by id, create migration that do this
 
 ```ruby
@@ -15,6 +17,16 @@ add_column table_name, :uuid, :uuid, default: -> { "uuid_generate_v4()" }
 ```
 
 and use this `uuid` column for finding records instead of `id`.
+
+### Routes
+
+Don't use `match` in routes. Use `resources` instead. If you need to create custom route, use `get`, `post`, `patch`, `delete` instead of `match`.
+
+### Data
+
+#### seeds
+
+For every model, create seeds, create specific seeds for features you implement. Add comments to seeds file to explain what each seed does. Use `find_or_create_by` in seeds to avoid duplicates.
 
 ---
 
