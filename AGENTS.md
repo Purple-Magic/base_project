@@ -1,6 +1,20 @@
-## Command Execution
+## Basic Guidelines for AI-Assisted Code Generation in Tramway
 
+### Command Execution
+
+#### dip
 Run all Ruby, Rails, Bundler, RSpec, and rake commands with `dip` by default. Use another command style only when the user explicitly asks for it.
+
+### Data permissions
+
+#### uuid
+Don't use `id` as a parameter for any request, except for `admin` namespace. Use `uuid` instead. If you need to show some record on the page by id, create migration that do this
+
+```ruby
+add_column table_name, :uuid, :uuid, default: -> { "uuid_generate_v4()" }
+```
+
+and use this `uuid` column for finding records instead of `id`.
 
 ---
 
