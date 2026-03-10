@@ -1,3 +1,9 @@
+## Command Execution
+
+Run all Ruby, Rails, Bundler, RSpec, and rake commands with `dip` by default. Use another command style only when the user explicitly asks for it.
+
+---
+
 ## Start of Tramway AGENTS.md
 # AGENTS.md: Tramway Code Generation Standards
 
@@ -11,7 +17,7 @@ This document guides AI-assisted code generation for Rails applications built wi
 
 Tramway extends Rails with:
 - **CRUD** actions that can be configured in `config/initializers/tramway.rb`.
-- **Generators** that wire Tailwind, ViewComponent, and pagination defaults (`bin/rails g tramway:install`).
+- **Generators** that wire Tailwind, ViewComponent, and pagination defaults (`rails g tramway:install`).
 - **ViewComponents** for reusable UI pieces.
 - **Tailwind safelist** utilities to keep dynamic classes in the build.
 
@@ -28,7 +34,7 @@ Generated code should:
 1) **Install Tramway defaults**
 
 ```bash
-bin/rails g tramway:install
+rails g tramway:install
 ```
 
 - The install generator appends missing gems, copies Tailwind safelist config, ensures `app/assets/tailwind/application.css` imports Tailwind, and writes an `AGENTS.md` guide in the project root.
