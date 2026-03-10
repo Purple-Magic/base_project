@@ -72,3 +72,12 @@ end
 
 # Use PostgreSQL as the database for Active Record
 gem "pg", "~> 1.6"
+
+gem "tramway", "~> 3.0"
+
+# Tramway dependencies
+gem "kaminari"
+gem "view_component"
+gem 'dry-initializer'
+gem 'dry-monads'
+
