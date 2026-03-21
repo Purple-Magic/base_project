@@ -30,6 +30,6 @@
           - @members.each do |member|
             = tramway_row do
               = tramway_cell do
-                %span.font-medium.text-slate-900= member.full_name
+                = member.full_name
               = tramway_cell do
                 = member.chats_count

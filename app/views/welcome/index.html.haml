@@ -11,7 +11,7 @@
         - @chats.each do |chat|
           = tramway_row href: chat.show_path do
             = tramway_cell do
-              %span.font-medium.text-slate-900= chat.title
+              = chat.title
             = tramway_cell do
               = pluralize(chat.members_count, 'member')
             = tramway_cell do
