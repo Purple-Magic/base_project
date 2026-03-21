@@ -450,7 +450,7 @@ GEM
     thruster (0.1.19-x86_64-linux)
     tilt (2.7.0)
     timeout (0.6.0)
-    tramway (3.0.1)
+    tramway (3.0.3)
       anyway_config
       dry-initializer
       dry-struct
@@ -527,7 +527,7 @@ DEPENDENCIES
   stimulus-rails
   tailwindcss-rails (~> 4.4)
   thruster
-  tramway (~> 3.0)
+  tramway (= 3.0.3)
   turbo-rails
   tzinfo-data
   view_component
@@ -704,7 +704,7 @@ CHECKSUMS
   thruster (0.1.19-x86_64-linux) sha256=7cddc1bd0c4fb2e26cc4878dc1f4eb7e883a45932e8d1cacda71b1aba1a645b6
   tilt (2.7.0) sha256=0d5b9ba69f6a36490c64b0eee9f6e9aad517e20dcc848800a06eb116f08c6ab3
   timeout (0.6.0) sha256=6d722ad619f96ee383a0c557ec6eb8c4ecb08af3af62098a0be5057bf00de1af
-  tramway (3.0.1) sha256=68579ab548e7584fd25e6b10e5751345f5aa64e8d6aae84154a673492f6bdf96
+  tramway (3.0.3) sha256=1201001d18777d0d330d03e0da1b525ab9911ec9e7a37423e04a32052b18ed09
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   turbo-rails (2.0.23) sha256=ee0d90733aafff056cf51ff11e803d65e43cae258cc55f6492020ec1f9f9315f
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
