@@ -52,6 +52,12 @@ group :development, :test do
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
+  # Use Factory Bot for test data setup
+  gem "factory_bot_rails"
+
+  # Use Pry for debugging in development and test environments
+  gem 'pry'
+
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
@@ -67,7 +73,6 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
-  gem "factory_bot_rails"
   gem "selenium-webdriver"
 end
 

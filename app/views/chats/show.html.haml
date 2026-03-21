@@ -15,11 +15,10 @@
             Created
             = l(@chat.created_at, format: :long)
 
-        = tramway_chat chat_id: dom_id(@chat.object),
+        = tramway_chat chat_id: @chat.uuid,
           messages: @chat.transcript_messages,
-          message_form: nil,
-          send_message_path: '#',
-          send_messages_enabled: false
+          message_form: @message_form,
+          send_message_path: chats_messages_path
 
       .space-y-4
         %h2.text-lg.font-semibold.text-slate-900 Members

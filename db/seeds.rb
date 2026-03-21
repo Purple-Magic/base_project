@@ -30,8 +30,8 @@ seed_chats = [
 ]
 
 seed_chats.each do |attributes|
-  chat = Chat.find_or_create_by!(name: attributes[:name])
   members = attributes[:members].map { |member| User.find_by!(member) }
+  chat = Chat.find_or_create_by!(name: attributes[:name], creator: members.first)
 
   chat.users = members
 end

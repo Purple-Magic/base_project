@@ -14,14 +14,12 @@ class ChatDecorator < Tramway::BaseDecorator
   end
 
   def transcript_messages
-    return [empty_state_message] if users.empty?
-
-    ordered_users.each_with_index.map do |user, index|
+    object.messages.map do |message|
       {
-        id: "chat-#{uuid}-message-#{index}",
-        type: index.even? ? :received : :sent,
-        text: "Hi, I'm #{display_name(user)}.",
-        sent_at: created_at + index.minutes
+        id: message.uuid,
+        type: message.sender_id == object.creator_id ? :sent : :received,
+        text: message.text,
+        sent_at: message.created_at,
       }
     end
   end
@@ -34,14 +32,5 @@ class ChatDecorator < Tramway::BaseDecorator
 
   def display_name(user)
     [user.first_name, user.last_name].join(' ').strip
-  end
-
-  def empty_state_message
-    {
-      id: "chat-#{uuid}-empty",
-      type: :received,
-      text: 'This chat does not have any members yet.',
-      sent_at: created_at || Time.current
-    }
   end
 end
