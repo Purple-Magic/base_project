@@ -75,6 +75,28 @@ services:
       test: pg_isready -U postgres -h 127.0.0.1
       interval: 5s
 
+  rspec:
+    <<: *backend
+    environment:
+      <<: *backend_environment
+      HUB_URL: http://chrome:4444/wd/hub
+    depends_on:
+      <<: *backend_depends_on
+      chrome:
+        condition: service_started
+        restart: true
+
+  chrome:
+    image: seleniarm/standalone-chromium:latest
+    ports:
+      - '7900:7900'
+    environment:
+      SCREEN_WIDTH: 1920
+      SCREEN_HEIGHT: 1080
+    volumes:
+      - /dev/shm:/dev/shm
+      - ../tmp/downloads/:/home/seluser/Downloads/
+
 volumes:
   bundle:
   history:
