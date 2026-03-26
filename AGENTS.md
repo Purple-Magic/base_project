@@ -26,7 +26,8 @@ Don't use `match` in routes. Use `resources` instead. If you need to create cust
 
 #### seeds
 
-For every model, create seeds, create specific seeds for features you implement. Add comments to seeds file to explain what each seed does. Use `find_or_create_by` in seeds to avoid duplicates.
+1. For every model, create seeds, create specific seeds for features you implement. Add comments to seeds file to explain what each seed does. Use `find_or_create_by` in seeds to avoid duplicates.
+2. Fill seeds with logging using `puts` method and gem `colorize`. Progress of creating seeds should be visible in the console.
 
 ### Documentation
 
