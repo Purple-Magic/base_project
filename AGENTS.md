@@ -10,7 +10,8 @@ Run all Ruby, Rails, Bundler, RSpec, and rake commands with `dip` by default. Us
 
 #### uuid
 
-Don't use `id` as a parameter for any request, except for `admin` namespace. Use `uuid` instead. If you need to show some record on the page by id, create migration that do this
+1. Don't use `id` as a parameter for any request, except for `admin` namespace. Use `uuid` instead. If you need to show some record on the page by id, create migration that do this
+2. Don't add ActiveRecord validations to `uuid` column. It's already guaranteed by the database level.
 
 ```ruby
 add_column table_name, :uuid, :uuid, default: -> { "uuid_generate_v4()" }
@@ -27,7 +28,11 @@ Don't use `match` in routes. Use `resources` instead. If you need to create cust
 #### seeds
 
 1. For every model, create seeds, create specific seeds for features you implement. Add comments to seeds file to explain what each seed does. Use `find_or_create_by` in seeds to avoid duplicates.
-2. Fill seeds with logging using `puts` method and gem `colorize`. Progress of creating seeds should be visible in the console.
+2. Fill seeds with logging using `puts` method and gem `colorize`. Progress of creating seeds should be visible in the console. Highlight with colors from colorize gem like this:
+
+```ruby
+puts "Creating users...".colorize(:blue)
+```
 
 ### Documentation
 
