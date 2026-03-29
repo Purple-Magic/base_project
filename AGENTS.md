@@ -38,6 +38,13 @@ puts "Creating users...".colorize(:blue)
 
 Describe the full functionality of the app in .md files `docs/users/` directory. Do this only for features that users see and can use. Do not put there codebase, code base, admin panel, etc. For example, if you have a feature for managing orders, create `docs/users/orders.md` and write the full description of the feature there. Use this files also to be sure that you are doing well, always update them when needed. Write all this in English. This docs will be used for onboarding new users (NOT ENGINEERS), so DO NOT PUT EVERY TECHNICAL DETAIL THERE, just the user-facing functionality. This will help to onboard new users faster and also to be sure that you are doing well and not missing any important details.
 
+### Testing
+
+#### rspec
+
+1. Do not use `require 'rails_helper'` in RSpec tests. It's already required in `.rsec` file.
+2. Do not write `RSpec.describe` in RSpec tests. Just write `describe` instead.
+
 ---
 
 ## Start of Tramway AGENTS.md
