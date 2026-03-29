@@ -45,6 +45,24 @@ Describe the full functionality of the app in .md files `docs/users/` directory.
 1. Do not use `require 'rails_helper'` in RSpec tests. It's already required in `.rsec` file.
 2. Do not write `RSpec.describe` in RSpec tests. Just write `describe` instead.
 
+### Syntax
+
+#### Constants
+
+1. Do not use constants for symbols. Use symbols directly in the code. For example, instead of this:
+
+```ruby
+STATUS_ACTIVE = :active
+
+status: STATUS_ACTIVE
+```
+
+Use this:
+
+```ruby
+status: :active
+```
+
 ---
 
 ## Start of Tramway AGENTS.md
