@@ -63,6 +63,10 @@ Use this:
 status: :active
 ```
 
+### Prompt management
+
+1. Always put prompts into the `.md` files. Do not put them directly into a Ruby code.
+
 ---
 
 ## Start of Tramway AGENTS.md
