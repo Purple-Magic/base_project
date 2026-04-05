@@ -1,0 +1,8 @@
+= tramway_container do
+  .space-y-6.py-10
+    = tramway_title text: 'Authentication failed'
+
+    .rounded-3xl.border.border-red-200.bg-red-50.p-6.text-sm.text-red-800.shadow-sm
+      = @error_msg
+
+    = tramway_button path: root_path, text: 'Back to chats', color: :blue

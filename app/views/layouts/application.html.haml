@@ -23,6 +23,19 @@
     = javascript_importmap_tags
 
   %body
+    = tramway_navbar title: 'Chats', title_link: root_path, with_entities: false do |nav|
+      - nav.left do
+        - nav.item 'Browse chats', root_path
+
+      - nav.right do
+        - if logged_in_using_omniauth?
+          - if current_user_name.present?
+            - nav.item current_user_name, user_path
+          - nav.item 'Profile', user_path
+          - nav.item 'Logout', auth0_logout_path, method: :get, data: { turbo: false }
+        - else
+          - nav.item 'Login', '/auth/auth0', method: :post, data: { turbo: false }
+
     = tramway_main_container do
       - if flash.any?
         = tramway_flash text: flash[:notice].presence || flash[:alert],

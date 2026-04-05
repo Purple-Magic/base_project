@@ -78,8 +78,10 @@ end
 
 # Use PostgreSQL as the database for Active Record
 gem "pg", "~> 1.6"
+gem "omniauth-auth0", "~> 3.0"
+gem "omniauth-rails_csrf_protection", "~> 1.0"
 
-gem "tramway", "3.0.3"
+gem "tramway", "3.0.3.1"
 
 # Tramway dependencies
 gem "kaminari"
