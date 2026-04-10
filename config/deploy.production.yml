@@ -42,6 +42,7 @@ proxy:
 
 accessories:
   db:
+    service: db
     image: postgres:17
     host: <%= ENV['DB_HOST'] %>
     port: 5432
