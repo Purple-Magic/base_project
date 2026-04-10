@@ -1,7 +1,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= Rails.application.credentials.dig(:database, :pool) || 15 %>
+  pool: <%= Rails.application.credentials.dig(Rails.env.to_sym, :database, :pool) || 15 %>
 
 development_default: &development_default
   <<: *default
@@ -43,46 +43,46 @@ test:
 
 production_default: &production_default
   <<: *default
-  host: <%= Rails.application.credentials.dig(:database, :host) %>
-  username: <%= Rails.application.credentials.dig(:database, :username) %>
-  password: <%= Rails.application.credentials.dig(:database, :password) %>
+  host: <%= Rails.application.credentials.dig(:production, :database, :host) %>
+  username: <%= Rails.application.credentials.dig(:production, :database, :username) %>
+  password: <%= Rails.application.credentials.dig(:production, :database, :password) %>
 
 production:
   primary:
     <<: *production_default
-    database: <%= Rails.application.credentials.dig(:database, :primary, :name) %>
+    database: <%= Rails.application.credentials.dig(:production, :database, :primary, :name) %>
   cable:
     <<: *production_default
-    database: <%= Rails.application.credentials.dig(:database, :cable, :name) %>
+    database: <%= Rails.application.credentials.dig(:production, :database, :cable, :name) %>
     migrations_paths: db/cable_migrate
   queue:
     <<: *production_default
-    database: <%= Rails.application.credentials.dig(:database, :queue, :name) %>
+    database: <%= Rails.application.credentials.dig(:production, :database, :queue, :name) %>
     migrations_paths: db/queue_migrate
   cache:
     <<: *production_default
-    database: <%= Rails.application.credentials.dig(:database, :cache, :name) %>
+    database: <%= Rails.application.credentials.dig(:production, :database, :cache, :name) %>
     migrations_paths: db/cache_migrate
 
 staging_default: &staging_default
   <<: *default
-  host: <%= Rails.application.credentials.dig(:database, :host) %>
-  username: <%= Rails.application.credentials.dig(:database, :username) %>
-  password: <%= Rails.application.credentials.dig(:database, :password) %>
+  host: <%= Rails.application.credentials.dig(:staging, :database, :host) %>
+  username: <%= Rails.application.credentials.dig(:staging, :database, :username) %>
+  password: <%= Rails.application.credentials.dig(:staging, :database, :password) %>
 
 staging:
   primary:
     <<: *staging_default
-    database: <%= Rails.application.credentials.dig(:database, :primary, :name) %>
+    database: <%= Rails.application.credentials.dig(:staging, :database, :primary, :name) %>
   cable:
     <<: *staging_default
-    database: <%= Rails.application.credentials.dig(:database, :cable, :name) %>
+    database: <%= Rails.application.credentials.dig(:staging, :database, :cable, :name) %>
     migrations_paths: db/cable_migrate
   queue:
     <<: *staging_default
-    database: <%= Rails.application.credentials.dig(:database, :queue, :name) %>
+    database: <%= Rails.application.credentials.dig(:staging, :database, :queue, :name) %>
     migrations_paths: db/queue_migrate
   cache:
     <<: *staging_default
-    database: <%= Rails.application.credentials.dig(:database, :cache, :name) %>
+    database: <%= Rails.application.credentials.dig(:staging, :database, :cache, :name) %>
     migrations_paths: db/cache_migrate

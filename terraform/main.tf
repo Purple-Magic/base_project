@@ -8,26 +8,56 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 4.0"
     }
+    onepassword = {
+      source = "1Password/onepassword"
+    }
   }
 }
 
+locals {
+  hostname_app_name = replace(lower(var.app_name), "/[^a-z0-9-]/", "-")
+  droplet_name      = var.environment == "production" ? local.hostname_app_name : "${local.hostname_app_name}-${var.environment}"
+  subdomain         = var.environment == "production" ? local.hostname_app_name : "${var.environment}-${local.hostname_app_name}"
+  onepassword_vault = "${var.onepassword_vault}_${var.environment}"
+}
+
+provider "onepassword" {}
+
+data "onepassword_vault" "terraform" {
+  name = local.onepassword_vault
+}
+
+ephemeral "onepassword_item" "digitalocean" {
+  vault = data.onepassword_vault.terraform.uuid
+  title = var.onepassword_digitalocean_item
+}
+
+ephemeral "onepassword_item" "cloudflare" {
+  vault = data.onepassword_vault.terraform.uuid
+  title = var.onepassword_cloudflare_item
+}
+
+data "onepassword_item" "domain" {
+  vault = data.onepassword_vault.terraform.uuid
+  title = var.onepassword_domain_item
+}
+
 provider "digitalocean" {
-  token = var.do_token
+  token = ephemeral.onepassword_item.digitalocean.credential
 }
 
 provider "cloudflare" {
-  email   = var.cloudflare_email
-  api_key = var.cloudflare_api_key
+  api_token = ephemeral.onepassword_item.cloudflare.credential
 }
 
 resource "digitalocean_droplet" "kamal_app" {
-  name       = "base_project"
-  region     = var.region
-  size       = var.size
-  image      = "ubuntu-24-04-x64"
+  name   = local.droplet_name
+  region = var.region
+  size   = var.size
+  image  = "ubuntu-24-04-x64"
 
-  ssh_keys   = [var.ssh_fingerprint]
-  tags       = ["kamal", var.app_name]
+  ssh_keys = [var.ssh_key_identifier]
+  tags     = ["kamal", var.app_name, var.environment]
 
   backups    = false
   ipv6       = true
@@ -42,13 +72,12 @@ resource "digitalocean_droplet" "kamal_app" {
 }
 
 data "cloudflare_zone" "primary" {
-  name = var.domain
+  name = data.onepassword_item.domain.password
 }
 
-# Create an A record for base_project.purple-magic.com
 resource "cloudflare_record" "base_project_subdomain" {
   zone_id = data.cloudflare_zone.primary.id
-  name    = "base_project"
+  name    = local.subdomain
   content = digitalocean_droplet.kamal_app.ipv4_address
   type    = "A"
   ttl     = 1
@@ -59,6 +88,10 @@ output "main_host_ip" {
   value = digitalocean_droplet.kamal_app.ipv4_address
 }
 
+output "droplet_id" {
+  value = tostring(digitalocean_droplet.kamal_app.id)
+}
+
 output "env_snippet" {
   value = <<EOT
 MAIN_HOST=${digitalocean_droplet.kamal_app.ipv4_address}
@@ -67,7 +100,7 @@ EOT
 }
 
 output "subdomain_url" {
-  value = "base_project.${var.domain}"
+  value = nonsensitive("${local.subdomain}.${data.onepassword_item.domain.password}")
 }
 
 resource "null_resource" "wait_for_ssh" {

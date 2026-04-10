@@ -63,6 +63,13 @@ Use this:
 status: :active
 ```
 
+### Deploy
+
+#### terraform configuration
+
+1. Create commands must not contain contain any destroy action until the user explicitly asks for it. For example, if you have a command for creating a new droplet, do not add any destroy action to it. If you need to create a command for destroying an environment, create a separate command for that.
+
+
 ### Prompt management
 
 1. Always put prompts into the `.md` files. Do not put them directly into a Ruby code.
@@ -82,7 +89,7 @@ This document guides AI-assisted code generation for Rails applications built wi
 
 Tramway extends Rails with:
 - **CRUD** actions that can be configured in `config/initializers/tramway.rb`.
-- **Generators** that wire Tailwind, ViewComponent, and pagination defaults (`rails g tramway:install`).
+- **Generators** that wire Tailwind, ViewComponent, and pagination defaults (`bin/rails g tramway:install`).
 - **ViewComponents** for reusable UI pieces.
 - **Tailwind safelist** utilities to keep dynamic classes in the build.
 
@@ -99,7 +106,7 @@ Generated code should:
 1) **Install Tramway defaults**
 
 ```bash
-rails g tramway:install
+bin/rails g tramway:install
 ```
 
 - The install generator appends missing gems, copies Tailwind safelist config, ensures `app/assets/tailwind/application.css` imports Tailwind, and writes an `AGENTS.md` guide in the project root.
@@ -204,7 +211,7 @@ Normalize input with `normalizes` (from Tramway) for attributes like email, phon
 When you need form-level validation, use Tramway Form `validates` on the form object (ActiveModel/ActiveRecord validation options like `presence: true` work, and `with:` is optional unless a validator requires it). Keep data integrity validations in the model unless the request explicitly needs form-only logic.
 
 ### Rule 3
-Use Tramway Navbar for navigation
+Use Tramway Navbar for navigation. Put there basic links: Login, Logout.
 
 ### Rule 4
 Use Tramway Flash for user notifications.
@@ -218,6 +225,9 @@ Use Tramway Flash for user notifications.
 
 ### Rule 5
 Use Tramway Table for tabular data display.
+
+`tramway_row` supports `href:` for clickable rows and `preview:` for mobile row preview behavior. Keep `preview: true` as the
+default unless the request explicitly needs preview disabled.
 
 ### Rule 6
 Use Tramway Button for buttons. Always add a color of the button via `color:` or `type:` argument. `color:` argument support directs colors only: red, yellow, blue, etc. `type:` argument supports only lantern colors: will, hope, rage, etc.
@@ -243,6 +253,10 @@ Available `tramway_form_for` helpers:
 - `tramway_select`
 - `submit`
 
+### Rule 7.1
+Use `tramway_form_for(remote: true)` only when the form must submit asynchronously and update part of the current page (for example: modal forms, inline edits, or list updates without full page reload).
+For standard create/update flows that redirect and show regular flash messages, keep it synchronous (do not set `remote: true`).
+
 ### Rule 8
 Inherit all components from Tramway::BaseComponent
 
@@ -256,6 +270,69 @@ when chat should be visible but sending is temporarily unavailable.
 For live updates to a rendered `tramway_chat`, use `tramway_chat_append_message(chat_id:, message_type:, text:, sent_at:)`.
 This method is included in all controllers and ActiveRecord models. `message_type` must be `:sent` or `:received`, otherwise
 it raises `ArgumentError`. `chat_id` must match the stream id used in `tramway_chat`.
+
+`message_form` object must be a `Tramway::BaseForm` or an inherited class object. It must contain `text` attribute.
+`send_message_path` must be a `POST` route that receives data on sending messsage submition.
+
+Here an example of usage:
+
+*app/views/chats/show.html.haml*
+```haml
+= tramway_chat chat_id: @chat.id,
+  messages: @chat.messages_for_chat,
+  message_form: @message_form,
+  send_message_path: chats_messages_path
+```
+
+*app/decorators/chat_decorator.rb*
+```ruby
+class ChatDecorator < Tramway::BaseDecorator
+  def messages_for_chat
+    object.messages.map do |message|
+      {
+        id: message.id,
+        type: :sent, # or received
+        text: message.text,
+        sent_at: message.created_at,
+      }
+    end
+  end
+end
+```
+
+*app/controllers/chats_controller.rb*
+```ruby
+  def show
+    @chat = tramway_decorate Chat.find params[:id]
+    @message_form = tramway_form chat.messages.build
+  end
+```
+
+**app/forms/message_form.rb**
+```ruby
+class Chats::MessageForm < Tramway::BaseForm
+  properties :text, :chat_id
+end
+```
+
+**config/routes.rb**
+```ruby
+    resources :messages, only: :create
+```
+
+**app/controllers/messages_controller.rb**
+```ruby
+  def create
+    @message = tramway_form chat.creator.messages.build(chat:)
+
+    if @message.submit params[:message]
+      tramway_chat_append_message chat_id: @message.object.chat.id,
+        type: :sent,
+        text: @message.object.text,
+        sent_at: @message.object.created_at
+    end
+  end
+```
 
 ### Rule 9
 If page `create` or `update` is configured for an entity, use Tramway Form pattern for forms. Visible fields are configured via `form_fields` method.
@@ -477,7 +554,7 @@ end
 In specs ALWAYS use factories (FactoryBot gem) to create models and attributes hash. In case there is no factory for the model, create one inside `spec/factories/#{pluralized model_name}.rb`.
 
 ### Rule 20
-In case you need enumerize for model attribute, make sure to use `enumerize` gem for that. DO NOT use `boolean` or `integer` types for enumerations.
+In case you need enumerize for model attribute, make sure to use `enumerize` gem for that. DO NOT use `boolean` or `integer` types for enumerations. Make sure you made `extend Enumerize` in `ApplicationRecord`.
 
 ### Rule 21
 In case you need something that looks like enumerize but it's a process state, use `aasm` gem for that.
@@ -571,6 +648,36 @@ and in a controller
   end
 ```
 
+Use dry-monads while call these services.
+
+Instead of this 
+
+```ruby
+result = SomeService.call(args)
+
+case result
+when :success
+  # code
+when :failure
+  # code
+end
+```
+
+Do this 
+
+```ruby
+case SomeService.call(args)
+in Success(result)
+  # use result
+in Success(another_result)
+  # use another result
+in Failure(reason_or_error)
+  # do stuff
+end
+```
+
+Success and Failure must describe all possible results of calling certain service.
+
 ### Rule 27
 Don't create scopes for enumerated values, use `scope: :shallow` of the enumerize gem.
 
@@ -602,7 +709,18 @@ Always `tramway_decorate` and `tramway_form` for creating these types of objects
 In Tramway Decorators, use `delegate_attributes` method instead of `delegate :something, to: :object`
 
 ### Rule 33
-In case you want to use container on the page, use `tramway_container` helper instead of creating a component for that or using a plain div with Tailwind classes.
+In case you want to use container on the page, use `tramway_container` helper instead of creating a component for that or using a plain div with Tailwind classes. In case you need to use container in layout view, use `tramway_main_container` for this. Here is example of using `tramway_main_container` inside application layout.
+
+```
+= tramway_main_container do
+  - if flash.any?
+    = tramway_flash text: flash[:notice].presence || flash[:alert],
+      type: flash[:notice].present? ? :will : :rage,
+      id: 'flash-container'
+```
+
+### Rule 34
+If for some model already has index and show pages via Tramway Entity, and the request explicitly needs state management. Do not create a new controller for that. Instead, create a new component for buttons and use it via `show_header_content` in Tramway Decorator for show page and new columns (Actions) in `list_attributes` for index page. This column should be rendered via the component and contain buttons for state management.
 
 ## Controller Patterns
 

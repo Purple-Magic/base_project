@@ -395,5 +395,42 @@ module.exports = {
     'shadow',
     'text-black',
     'pointer-events-none'
-  ],
+  
+
+  'bottom-0',
+
+  'left-0',
+
+  'right-0',
+
+  'h-1/2',
+
+  'bg-gray-100',
+
+  'animate-roll-up',
+
+  'hover:text-gray-700',
+
+  'pt-4',
+
+  'md:hidden',
+
+  'h-5',
+
+  'w-5',
+
+  'mb-0',
+
+  'min-w-2',
+
+  'min-h-2',
+
+  'min-w-4',
+
+  'min-h-4',
+
+  'min-w-6',
+
+  'min-h-6',
+],
 }
