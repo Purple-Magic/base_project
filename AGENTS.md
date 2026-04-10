@@ -69,6 +69,11 @@ status: :active
 
 1. Create commands must not contain contain any destroy action until the user explicitly asks for it. For example, if you have a command for creating a new droplet, do not add any destroy action to it. If you need to create a command for destroying an environment, create a separate command for that.
 
+
+### Prompt management
+
+1. Always put prompts into the `.md` files. Do not put them directly into a Ruby code.
+
 ---
 
 ## Start of Tramway AGENTS.md
