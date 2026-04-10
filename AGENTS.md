@@ -63,6 +63,12 @@ Use this:
 status: :active
 ```
 
+### Deploy
+
+#### terraform configuration
+
+1. Create commands must not contain contain any destroy action until the user explicitly asks for it. For example, if you have a command for creating a new droplet, do not add any destroy action to it. If you need to create a command for destroying an environment, create a separate command for that.
+
 ---
 
 ## Start of Tramway AGENTS.md

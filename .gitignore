@@ -40,4 +40,6 @@
 !/app/assets/builds/.keep
 /public/assets
 /terraform/secrets.auto.tfvars
+/terraform/.*
+/terraform/terraform.tfstate.d/*
 

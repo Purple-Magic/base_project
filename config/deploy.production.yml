@@ -19,7 +19,7 @@ env:
     - RAILS_MASTER_KEY
   clear:
     SOLID_QUEUE_IN_PUMA: true
-    RAILS_ENV: <%= ENV['RAILS_ENV'] %>
+    RAILS_ENV: production
 
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
@@ -32,6 +32,8 @@ volumes:
 
 builder:
   arch: amd64
+  args:
+    RAILS_ENV: production
 
 readiness_delay: 10
 

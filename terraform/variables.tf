@@ -1,11 +1,15 @@
-variable "do_token" {
-  description = "DigitalOcean API token"
+variable "environment" {
+  description = "Deployment environment"
   type        = string
-  sensitive   = true
+
+  validation {
+    condition     = contains(["production", "staging"], var.environment)
+    error_message = "environment must be either production or staging."
+  }
 }
 
-variable "ssh_fingerprint" {
-  description = "Your SSH key fingerprint in DigitalOcean"
+variable "ssh_key_identifier" {
+  description = "DigitalOcean SSH key identifier resolved from the configured 1Password SSH key name"
   type        = string
 }
 
@@ -24,19 +28,44 @@ variable "app_name" {
   default     = "base_project"
 }
 
-variable "cloudflare_email" {
-  description = "Cloudflare account email"
+variable "onepassword_vault" {
+  description = "1Password vault name prefix that stores Terraform provider credentials"
   type        = string
+  default     = "base_project"
 }
 
-variable "cloudflare_api_key" {
-  description = "Cloudflare API Key (Global API Key)"
+variable "onepassword_digitalocean_item" {
+  description = "1Password item title for the DigitalOcean API credential"
   type        = string
-  sensitive   = true
+  default     = "DigitalOcean Terraform"
 }
 
-variable "domain" {
-  description = "Domain to manage in Cloudflare"
+variable "onepassword_cloudflare_item" {
+  description = "1Password item title for the Cloudflare API credential"
   type        = string
+  default     = "Cloudflare Terraform"
 }
 
+variable "onepassword_domain_item" {
+  description = "1Password item title for the domain value"
+  type        = string
+  default     = "Terraform Domain"
+}
+
+variable "onepassword_main_host_item" {
+  description = "1Password item title for the MAIN_HOST value"
+  type        = string
+  default     = "MAIN_HOST"
+}
+
+variable "onepassword_host_item" {
+  description = "1Password item title for the HOST value"
+  type        = string
+  default     = "HOST"
+}
+
+variable "onepassword_ssh_key_name_item" {
+  description = "1Password item title for the DigitalOcean SSH key name value"
+  type        = string
+  default     = "Terraform SSH Key Name"
+}
