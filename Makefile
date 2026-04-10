@@ -3,7 +3,7 @@ SHELL := /bin/bash
 TF_DIR := terraform
 TF := terraform -chdir=$(TF_DIR)
 
-.PHONY: terraform_init terraform_preflight create_new_production create_new_staging deploy_production deploy_staging destroy_production destroy_staging
+.PHONY: terraform_init terraform_preflight create_new_production create_new_staging deploy_production deploy_staging logs_production logs_staging destroy_production destroy_staging
 
 terraform_init:
 	@$(TF) init
@@ -22,6 +22,10 @@ endef
 
 define kamal_setup
 	@./terraform/run_kamal_setup.sh $(1)
+endef
+
+define kamal_logs
+	@./terraform/run_kamal_logs.sh $(1)
 endef
 
 define sync_1password_hosts
@@ -70,6 +74,16 @@ deploy_staging: terraform_init
 	$(call require_workspace,staging)
 	$(call sync_1password_hosts,staging)
 	$(call kamal_setup,staging)
+
+logs_production: terraform_init
+	$(call require_workspace,production)
+	$(call sync_1password_hosts,production)
+	$(call kamal_logs,production)
+
+logs_staging: terraform_init
+	$(call require_workspace,staging)
+	$(call sync_1password_hosts,staging)
+	$(call kamal_logs,staging)
 
 destroy_production: terraform_init
 	$(call terraform_preflight,production,destroy)

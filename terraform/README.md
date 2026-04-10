@@ -45,7 +45,9 @@ Terraform derives them from the created droplet and configured domain, then `ter
 items to the environment vault after `terraform apply` completes successfully.
 
 `app_name` is normalized for hostname usage before Terraform creates the Droplet and DNS record. For example, `base_project`
-becomes `base-project`.
+becomes `base-project`. Non-production environments use a single-label hostname prefix such as
+`staging-base-project.example.com` so the generated hostname stays compatible with standard wildcard certificate coverage like
+`*.example.com`.
 
 For `Cloudflare Terraform`, store a Cloudflare API Token, not a Global API Key. The token must be able to read the zone and
 manage DNS records for the target zone. In practice, it should include permissions equivalent to `Zone:Read` and `DNS:Edit`

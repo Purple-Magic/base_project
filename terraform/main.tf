@@ -17,7 +17,7 @@ terraform {
 locals {
   hostname_app_name = replace(lower(var.app_name), "/[^a-z0-9-]/", "-")
   droplet_name      = var.environment == "production" ? local.hostname_app_name : "${local.hostname_app_name}-${var.environment}"
-  subdomain         = var.environment == "production" ? local.hostname_app_name : "${var.environment}.${local.hostname_app_name}"
+  subdomain         = var.environment == "production" ? local.hostname_app_name : "${var.environment}-${local.hostname_app_name}"
   onepassword_vault = "${var.onepassword_vault}_${var.environment}"
 }
 
