@@ -52,11 +52,27 @@ define confirm_destroy
 endef
 
 define confirm_create_requirements
-	@echo "Before provisioning '$(1)', confirm that all required deployment credentials are filled."; \
-	echo "Check Rails credentials for this environment and any other committed deployment files your app needs."; \
-	echo "Check 1Password vault 'base_project_$(1)' for: DigitalOcean Terraform, Cloudflare Terraform, Terraform Domain, and Terraform SSH Key Name."; \
-	echo "Use the 'credential' field for API tokens and the 'password' field for the domain and SSH key name."; \
-	echo "If your app depends on anything else for deploys, fill that now too."; \
+	@printf '\033[1;33m%s\033[0m\n' "Before provisioning '$(1)', confirm that all required deployment credentials are filled."; \
+	printf '\033[1;36m%s\033[0m\n' "Save Rails credentials for $(1) before continuing."; \
+	printf '%s\n' "Edit them with: dip bin/rails credentials:edit --environment $(1)"; \
+	printf '%s\n' "Example credentials structure:"; \
+	printf '\033[0;32m%s\033[0m\n' "$(1):"; \
+	printf '\033[0;32m%s\033[0m\n' "  database:"; \
+	printf '\033[0;32m%s\033[0m\n' "    host: db"; \
+	printf '\033[0;32m%s\033[0m\n' "    username: # username you want"; \
+	printf '\033[0;32m%s\033[0m\n' "    password: # password you want"; \
+	printf '\033[0;32m%s\033[0m\n' "    primary:"; \
+	printf '\033[0;32m%s\033[0m\n' "      name: # database name you want. Primary database contains project data"; \
+	printf '\033[0;32m%s\033[0m\n' "    cable:"; \
+	printf '\033[0;32m%s\033[0m\n' "      name: # database name you want. Cable database contains ActionCable data (WebSocket logic)"; \
+	printf '\033[0;32m%s\033[0m\n' "    queue:"; \
+	printf '\033[0;32m%s\033[0m\n' "      name: # database name you want. Queue database contains ActiveJob data (Background job logic)"; \
+	printf '\033[0;32m%s\033[0m\n' "    cache:"; \
+	printf '\033[0;32m%s\033[0m\n' "      name: # database name you want. Cache database contains caching data (Cache logic)"; \
+	printf '%s\n' "Check any other committed deployment files your app needs as well."; \
+	printf '%s\n' "Check 1Password vault 'base_project_$(1)' for: DigitalOcean Terraform, Cloudflare Terraform, Terraform Domain, and Terraform SSH Key Name."; \
+	printf '%s\n' "Use the 'credential' field for API tokens and the 'password' field for the domain and SSH key name."; \
+	printf '%s\n' "If your app depends on anything else for deploys, fill that now too."; \
 	read -r -p "Type 'c' to continue or 'a' to abort: " confirmation; \
 	if [[ "$$confirmation" == "a" || "$$confirmation" == "A" ]]; then \
 		echo "Create was aborted."; \
