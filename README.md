@@ -144,4 +144,5 @@ Additional deployment notes live in [terraform/README.md](/home/pavel/projects/b
 
 - [ ] Extract the deployment functionality into a separate gem.
 - [ ] Implement deployment with GitHub Actions.
-- [ ] Implement end-2-end tests
+- [ ] Implement end-to-end tests
+- [ ] Decompose AGENTS.md file
