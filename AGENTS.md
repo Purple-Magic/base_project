@@ -63,6 +63,10 @@ Use this:
 status: :active
 ```
 
+#### Modules
+
+1. Do not create modules and classes with the same name. For example, if you have a model `User`, do not create a module `User` for it. If you need to create a module for the model, use pluralization for it. For example, if you have a model `User`, you can create a module `Users` for it.
+
 ### Deploy
 
 #### terraform configuration
@@ -73,6 +77,25 @@ status: :active
 ### Prompt management
 
 1. Always put prompts into the `.md` files. Do not put them directly into a Ruby code.
+
+### Localization
+
+1. User Rails localization as much as possible. Do not create inside Ruby files any localization logic like:
+
+```ruby
+REPORT_TEXT = {
+  en: {
+    today: "Here is how much time you logged today:",
+    yesterday: "Here is how much time you logged yesterday:"
+  },
+  ru: {
+    today: "Вот сколько времени ты залогировал сегодня:",
+    yesterday: "Вот сколько времени ты залогировал вчера:"
+  }
+}
+```
+
+This sentences must be in the locale files.
 
 ---
 
