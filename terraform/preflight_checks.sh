@@ -94,7 +94,7 @@ matching_droplet_count="$(jq --arg droplet_name "$droplet_name" '
 
 if [[ "$mode" == "create" && "$matching_droplet_count" -gt 0 ]]; then
   echo "A DigitalOcean droplet named '$droplet_name' already exists." >&2
-  echo "Create was stopped to avoid colliding with an existing droplet. Remove or rename the existing droplet, or change app_name/environment." >&2
+  echo "Create was stopped to avoid colliding with an existing droplet. Remove or rename the existing droplet, or change app_name/environment. If you are totally sure the existing droplet was created via this toolset, you can run 'make destroy_staging' first." >&2
   exit 1
 fi
 

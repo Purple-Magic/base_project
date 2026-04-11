@@ -53,14 +53,19 @@ For `Cloudflare Terraform`, store a Cloudflare API Token, not a Global API Key. 
 manage DNS records for the target zone. In practice, it should include permissions equivalent to `Zone:Read` and `DNS:Edit`
 for the zone stored in `Terraform Domain`.
 
-`make create_new_staging` and `make create_new_production` run a preflight check before Terraform apply. If a required token is
-missing, saved in the wrong field, invalid, cannot access the configured zone, if the configured DigitalOcean SSH key name
-cannot be resolved to exactly one uploaded SSH key, or if a droplet with the target name already exists, the command fails
-early with a direct message instead of continuing.
+`make create_new_staging` and `make create_new_production` now stop before any provisioning work and ask you to confirm that
+all deployment credentials are ready. The prompt tells you to check Rails credentials for the target environment, any other
+committed deployment files your app depends on, and the environment-specific 1Password vault items `DigitalOcean Terraform`,
+`Cloudflare Terraform`, `Terraform Domain`, and `Terraform SSH Key Name`. Enter `c` to continue or `a` to abort.
+
+After that confirmation, the create commands run the preflight checks before Terraform apply. If a required token is missing,
+saved in the wrong field, invalid, cannot access the configured zone, if the configured DigitalOcean SSH key name cannot be
+resolved to exactly one uploaded SSH key, or if a droplet with the target name already exists, the command fails early with a
+direct message instead of continuing.
 
 After Terraform finishes creating the infrastructure and the SSH wait completes, the create commands sync `MAIN_HOST` and
-`HOST` into 1Password, then run `bin/kamal setup -d <environment>` with those values and `RAILS_ENV`. `DB_HOST` is not managed
-separately and is always set to the same value as `MAIN_HOST`.
+`HOST` into 1Password, then run `bin/kamal setup -d <environment>`. `DB_HOST` is not managed separately and is always set to
+the same value as `MAIN_HOST`.
 
 If you use a different vault prefix or item titles, set these Terraform variables:
 
