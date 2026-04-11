@@ -63,6 +63,10 @@ Use this:
 status: :active
 ```
 
+#### Modules
+
+1. Do not create modules and classes with the same name. For example, if you have a model `User`, do not create a module `User` for it. If you need to create a module for the model, use pluralization for it. For example, if you have a model `User`, you can create a module `Users` for it.
+
 ### Deploy
 
 #### terraform configuration
