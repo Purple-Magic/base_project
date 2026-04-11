@@ -54,7 +54,8 @@ endef
 define confirm_create_requirements
 	@printf '\033[1;33m%s\033[0m\n' "Before provisioning '$(1)', confirm that all required deployment credentials are filled."; \
 	printf '\033[1;36m%s\033[0m\n' "Save Rails credentials for $(1) before continuing."; \
-	printf '%s\n' "Edit them with: dip bin/rails credentials:edit --environment $(1)"; \
+	printf '%s\n' "Edit them with: dip rails credentials:edit"; \
+	printf '%s\n' "For this environment use: dip bin/rails credentials:edit --environment $(1)"; \
 	printf '%s\n' "Example credentials structure:"; \
 	printf '\033[0;32m%s\033[0m\n' "$(1):"; \
 	printf '\033[0;32m%s\033[0m\n' "  database:"; \

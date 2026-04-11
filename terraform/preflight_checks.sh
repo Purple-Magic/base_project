@@ -17,6 +17,13 @@ cloudflare_item="${ONEPASSWORD_CLOUDFLARE_ITEM:-Cloudflare Terraform}"
 domain_item="${ONEPASSWORD_DOMAIN_ITEM:-Terraform Domain}"
 app_name="${TF_VAR_app_name:-base_project}"
 droplet_name="$(./terraform/resolve_droplet_name.sh "$environment")"
+hostname_app_name="$(printf '%s' "$app_name" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9-]+/-/g')"
+
+if [[ "$environment" == "production" ]]; then
+  subdomain="$hostname_app_name"
+else
+  subdomain="${environment}-${hostname_app_name}"
+fi
 
 for required_command in op curl jq; do
   if ! command -v "$required_command" >/dev/null 2>&1; then
@@ -52,6 +59,7 @@ fi
 digitalocean_token="$(jq -r '.fields[] | select(.label == "credential") | .value' <<<"$digitalocean_item_json")"
 cloudflare_token="$(jq -r '.fields[] | select(.label == "credential") | .value' <<<"$cloudflare_item_json")"
 domain="$(jq -r '.fields[] | select(.label == "password") | .value' <<<"$domain_item_json")"
+record_name="${subdomain}.${domain}"
 
 if [[ -z "$digitalocean_token" || "$digitalocean_token" == "null" ]]; then
   echo "1Password item '$digitalocean_item' in vault '$vault' does not have a value in the 'credential' field." >&2
@@ -94,7 +102,7 @@ matching_droplet_count="$(jq --arg droplet_name "$droplet_name" '
 
 if [[ "$mode" == "create" && "$matching_droplet_count" -gt 0 ]]; then
   echo "A DigitalOcean droplet named '$droplet_name' already exists." >&2
-  echo "Create was stopped to avoid colliding with an existing droplet. Remove or rename the existing droplet, or change app_name/environment. If you are totally sure the existing droplet was created via this toolset, you can run 'make destroy_staging' first." >&2
+  echo "Create was stopped to avoid colliding with an existing droplet. Remove or rename the existing droplet, or change app_name/environment. If you are totally sure the existing droplet was created via this toolset, you can run 'make destroy_${environment}' first." >&2
   exit 1
 fi
 
@@ -138,5 +146,44 @@ zone_count="$(jq '.result | length' <<<"$zones_response")"
 if [[ "$zone_count" -lt 1 ]]; then
   echo "Cloudflare token is valid, but no accessible zone matched '$domain'." >&2
   echo "Check the value in '$domain_item' and confirm the token can access that zone." >&2
+  exit 1
+fi
+
+zone_id="$(jq -r '.result[0].id // empty' <<<"$zones_response")"
+
+if [[ -z "$zone_id" ]]; then
+  echo "Cloudflare zone lookup for '$domain' did not return a zone id." >&2
+  echo "Check the value in '$domain_item' and confirm the token can access that zone." >&2
+  exit 1
+fi
+
+dns_records_response="$(curl -sS -G \
+  -H "Authorization: Bearer $cloudflare_token" \
+  -H "Content-Type: application/json" \
+  --data-urlencode "name=$record_name" \
+  --data-urlencode "per_page=100" \
+  "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records")"
+
+dns_records_success="$(jq -r '.success // false' <<<"$dns_records_response")"
+
+if [[ "$dns_records_success" != "true" ]]; then
+  dns_records_message="$(jq -r 'first(.errors[]?.message) // "Cloudflare could not list DNS records for this zone."' <<<"$dns_records_response")"
+
+  echo "Cloudflare DNS record lookup failed for '$record_name'." >&2
+  echo "$dns_records_message" >&2
+  echo "Check that the token in '$cloudflare_item' can read DNS records for '$domain'." >&2
+  exit 1
+fi
+
+matching_dns_record_count="$(jq --arg record_name "$record_name" '
+  [
+    .result[]?
+    | select(.name == $record_name)
+  ] | length
+' <<<"$dns_records_response")"
+
+if [[ "$mode" == "create" && "$matching_dns_record_count" -gt 0 ]]; then
+  echo "A Cloudflare DNS record named '$record_name' already exists." >&2
+  echo "Create was stopped to avoid colliding with an existing DNS record. Remove or rename the existing record, or change app_name/environment. If you are totally sure the existing DNS record was created via this toolset, you can run 'make destroy_${environment}' first." >&2
   exit 1
 fi

@@ -60,8 +60,8 @@ committed deployment files your app depends on, and the environment-specific 1Pa
 
 After that confirmation, the create commands run the preflight checks before Terraform apply. If a required token is missing,
 saved in the wrong field, invalid, cannot access the configured zone, if the configured DigitalOcean SSH key name cannot be
-resolved to exactly one uploaded SSH key, or if a droplet with the target name already exists, the command fails early with a
-direct message instead of continuing.
+resolved to exactly one uploaded SSH key, if a droplet with the target name already exists, or if the target Cloudflare DNS
+record already exists, the command fails early with a direct message instead of continuing.
 
 After Terraform finishes creating the infrastructure and the SSH wait completes, the create commands sync `MAIN_HOST` and
 `HOST` into 1Password, then run `bin/kamal setup -d <environment>`. `DB_HOST` is not managed separately and is always set to
