@@ -51,14 +51,36 @@ define confirm_destroy
 	fi
 endef
 
-create_new_production: terraform_init
+define confirm_create_requirements
+	@echo "Before provisioning '$(1)', confirm that all required deployment credentials are filled."; \
+	echo "Check Rails credentials for this environment and any other committed deployment files your app needs."; \
+	echo "Check 1Password vault 'base_project_$(1)' for: DigitalOcean Terraform, Cloudflare Terraform, Terraform Domain, and Terraform SSH Key Name."; \
+	echo "Use the 'credential' field for API tokens and the 'password' field for the domain and SSH key name."; \
+	echo "If your app depends on anything else for deploys, fill that now too."; \
+	read -r -p "Type 'c' to continue or 'a' to abort: " confirmation; \
+	if [[ "$$confirmation" == "a" || "$$confirmation" == "A" ]]; then \
+		echo "Create was aborted."; \
+		echo "Fill the missing credentials, then run 'make $(2)' again."; \
+		exit 1; \
+	fi; \
+	if [[ "$$confirmation" != "c" && "$$confirmation" != "C" ]]; then \
+		echo "Expected 'c' or 'a'. Aborting."; \
+		exit 1; \
+	fi
+endef
+
+create_new_production:
+	$(call confirm_create_requirements,production,create_new_production)
+	@$(MAKE) terraform_init
 	$(call terraform_preflight,production,create)
 	$(call ensure_workspace,production)
 	@$(TF) apply -auto-approve -var="environment=production" -var="ssh_key_identifier=$(call terraform_ssh_key_identifier,production)"
 	$(call sync_1password_hosts,production)
 	$(call kamal_setup,production)
 
-create_new_staging: terraform_init
+create_new_staging:
+	$(call confirm_create_requirements,staging,create_new_staging)
+	@$(MAKE) terraform_init
 	$(call terraform_preflight,staging,create)
 	$(call ensure_workspace,staging)
 	@$(TF) apply -auto-approve -var="environment=staging" -var="ssh_key_identifier=$(call terraform_ssh_key_identifier,staging)"
