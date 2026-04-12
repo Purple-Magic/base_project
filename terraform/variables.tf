@@ -20,7 +20,7 @@ variable "region" {
 
 variable "size" {
   description = "Droplet size"
-  default     = "s-1vcpu-1gb"
+  default     = "s-1vcpu-2gb"
 }
 
 variable "app_name" {
