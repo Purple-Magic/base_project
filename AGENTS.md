@@ -97,6 +97,12 @@ REPORT_TEXT = {
 
 This sentences must be in the locale files.
 
+### Third party services
+
+1. When you need to implement integration with third party service, use official gem for that if it exists. Do not use direct API calls to the service if there is an official gem for it. For example, if you need to integrate with Stripe, use `stripe` gem for that instead of making direct API calls to Stripe.
+2. When you need to implement integration with third party service, create a service object for that. Do not put the integration logic directly into the controller or model. Created service objects must be named by business domain. For example, if you need to integrate with Stripe for payment processing, create a service object named `PaymentProcessor` for that.
+3. When you need to implement integration with third party service, do not call them synchronously. Use background jobs for that. For example, if you need to integrate with OpenAI for generating some content, do not call created service object synchronously in the controller. Instead, create a background job for that and call the service object inside the job.
+
 ---
 
 ## Start of Tramway AGENTS.md
