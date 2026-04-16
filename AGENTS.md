@@ -26,6 +26,7 @@ Load this file first. Do not preload every referenced file. Open only the files 
 - For UI markup, Tailwind, buttons, tables, containers, flash messages, titles, and ViewComponent rules, open [docs/agents/ui.md](/home/pavel/projects/base_project/docs/agents/ui.md).
 - For RSpec, Capybara, factories, and Tramway entity feature specs, open [docs/agents/testing.md](/home/pavel/projects/base_project/docs/agents/testing.md).
 - For third-party integration patterns, service-object boundaries, jobs, and monadic service results, open [docs/agents/integrations.md](/home/pavel/projects/base_project/docs/agents/integrations.md).
+- For implementation approaches and reusable feature patterns such as copy flows, imports, exports, search, or state transitions, open [docs/agents/recipes.md](/home/pavel/projects/base_project/docs/agents/recipes.md).
 
 ## Loading Strategy
 
@@ -41,3 +42,4 @@ Load this file first. Do not preload every referenced file. Open only the files 
 - Background jobs or API/service integrations: `rails.md` + `integrations.md`
 - User-facing feature changes that affect onboarding docs: `documentation.md`
 - Tailwind or component cleanup: `ui.md`
+- Reusable feature implementation approach: `recipes.md`
