@@ -52,8 +52,8 @@ define confirm_destroy
 endef
 
 define confirm_create_requirements
-	@printf '\033[1;33m%s\033[0m\n' "Before provisioning '$(1)', confirm that all required deployment credentials are filled."; \
-	printf '\033[1;36m%s\033[0m\n' "Save Rails credentials for $(1) before continuing."; \
+	@printf '\033[1;33m%s\033[0m\n' "Before provisioning '$(1)', confirm that all required deployment credentials are ready."; \
+	printf '\033[1;36m%s\033[0m\n' "1. Save Rails credentials for $(1)."; \
 	printf '%s\n' "Edit them with: dip rails credentials:edit"; \
 	printf '%s\n' "For this environment use: dip bin/rails credentials:edit --environment $(1)"; \
 	printf '%s\n' "Example credentials structure:"; \
@@ -70,10 +70,15 @@ define confirm_create_requirements
 	printf '\033[0;32m%s\033[0m\n' "      name: # database name you want. Queue database contains ActiveJob data (Background job logic)"; \
 	printf '\033[0;32m%s\033[0m\n' "    cache:"; \
 	printf '\033[0;32m%s\033[0m\n' "      name: # database name you want. Cache database contains caching data (Cache logic)"; \
-	printf '%s\n' "Check any other committed deployment files your app needs as well."; \
-	printf '%s\n' "Check 1Password vault 'base_project_$(1)' for: DigitalOcean Terraform, Cloudflare Terraform, Terraform Domain, and Terraform SSH Key Name."; \
-	printf '%s\n' "Use the 'credential' field for API tokens and the 'password' field for the domain and SSH key name."; \
-	printf '%s\n' "If your app depends on anything else for deploys, fill that now too."; \
+	printf '\033[1;36m%s\033[0m\n' "2. Check any other committed deployment files your app needs."; \
+	printf '\033[1;36m%s\033[0m\n' "3. Check 1Password vault 'base_project_$(1)' and make sure these items are filled:"; \
+	printf '%s\n' "   - DigitalOcean Terraform: DigitalOcean API Token"; \
+	printf '%s\n' "   - Cloudflare Terraform: Cloudflare API Token"; \
+	printf '%s\n' "   - Terraform Domain: the deployment domain"; \
+	printf '%s\n' "   - Terraform SSH Key Name: the exact DigitalOcean SSH key name that this machine will use to connect to the server"; \
+	printf '%s\n' "   Save API tokens in the 'credential' field."; \
+	printf '%s\n' "   Save the domain and SSH key name in the 'password' field."; \
+	printf '%s\n' "4. If your app depends on anything else for deploys, fill that now too."; \
 	read -r -p "Type 'c' to continue or 'a' to abort: " confirmation; \
 	if [[ "$$confirmation" == "a" || "$$confirmation" == "A" ]]; then \
 		echo "Create was aborted."; \

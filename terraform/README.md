@@ -38,7 +38,7 @@ Recommended values:
 - `DigitalOcean Terraform`: DigitalOcean API token
 - `Cloudflare Terraform`: Cloudflare API token
 - `Terraform Domain`: your Cloudflare zone name, for example `example.com`
-- `Terraform SSH Key Name`: the exact SSH key name shown in your DigitalOcean account
+- `Terraform SSH Key Name`: the exact SSH key name shown in your DigitalOcean account that this machine will use to connect to the server
 
 `MAIN_HOST` and `HOST` do not need to exist in 1Password before `make create_new_staging` or `make create_new_production`.
 Terraform derives them from the created droplet and configured domain, then `terraform/sync_1password_hosts.sh` writes both
