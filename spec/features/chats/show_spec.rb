@@ -1,9 +1,16 @@
 require 'rails_helper'
 
 describe 'Chats Show Page', type: :feature do
-  let!(:chat) { create(:chat, name: 'Product Planning') }
-  let!(:alice) { create(:user, first_name: 'Alice', last_name: 'Johnson', chats: [chat]) }
+  let!(:alice) { create(:user, first_name: 'Alice', last_name: 'Johnson') }
+  let!(:chat) { create(:chat, name: 'Product Planning', creator: alice) }
   let!(:bob) { create(:user, first_name: 'Bob', last_name: 'Miller', chats: [chat]) }
+
+  before do
+    alice.chats << chat
+
+    Chats::Message.create!(chat:, sender: alice, text: "Hi, I'm Alice Johnson.", uuid: SecureRandom.uuid)
+    Chats::Message.create!(chat:, sender: bob, text: "Hi, I'm Bob Miller.", uuid: SecureRandom.uuid)
+  end
 
   it 'displays the chat details and members' do
     visit chat_path(chat)

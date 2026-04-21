@@ -34,4 +34,17 @@ seed_chats.each do |attributes|
   chat = Chat.find_or_create_by!(name: attributes[:name], creator: members.first)
 
   chat.users = members
+
+  # Rebuild chat history on every seed run so each demo chat has a stable transcript size.
+  Chats::Message.where(chat:).delete_all
+
+  100.times do |index|
+    Chats::Message.create!(
+      chat:,
+      sender: members[index % members.size],
+      text: "##{index + 1} #{Faker::Lorem.sentence(word_count: rand(6..14))}",
+      created_at: 100.minutes.ago + index.minutes,
+      updated_at: 100.minutes.ago + index.minutes
+    )
+  end
 end
