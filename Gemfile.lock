@@ -1,3 +1,16 @@
+PATH
+  remote: vendor/tramway
+  specs:
+    tramway (3.0.3.3)
+      anyway_config
+      dry-initializer
+      dry-struct
+      haml-rails
+      kaminari
+      rails (>= 7, < 9)
+      tailwindcss-rails (>= 4.0)
+      view_component
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -149,6 +162,8 @@ GEM
     factory_bot_rails (6.5.1)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
+    faker (3.8.0)
+      i18n (>= 1.8.11, < 2)
     faraday (2.14.1)
       faraday-net_http (>= 2.0, < 3.5)
       json
@@ -493,15 +508,6 @@ GEM
     thruster (0.1.20-x86_64-linux)
     tilt (2.7.0)
     timeout (0.6.1)
-    tramway (3.0.3.3)
-      anyway_config
-      dry-initializer
-      dry-struct
-      haml-rails
-      kaminari
-      rails (>= 7, < 9)
-      tailwindcss-rails (>= 4.0)
-      view_component
     tsort (0.2.0)
     turbo-rails (2.0.23)
       actionpack (>= 7.1.0)
@@ -550,6 +556,7 @@ DEPENDENCIES
   dry-initializer
   dry-monads
   factory_bot_rails
+  faker
   haml-rails
   image_processing (~> 1.2)
   importmap-rails
@@ -573,7 +580,7 @@ DEPENDENCIES
   stimulus-rails
   tailwindcss-rails (~> 4.4)
   thruster
-  tramway (= 3.0.3.3)
+  tramway!
   turbo-rails
   tzinfo-data
   view_component
@@ -626,6 +633,7 @@ CHECKSUMS
   et-orbi (1.4.0) sha256=6c7e3c90779821f9e3b324c5e96fda9767f72995d6ae435b96678a4f3e2de8bc
   factory_bot (6.5.6) sha256=12beb373214dccc086a7a63763d6718c49769d5606f0501e0a4442676917e077
   factory_bot_rails (6.5.1) sha256=d3cc4851eae4dea8a665ec4a4516895045e710554d2b5ac9e68b94d351bc6d68
+  faker (3.8.0) sha256=c147b308df73a90f27a4fc84f18d4c22ef0ad9c2a64b2b61c86fd0ca71753efc
   faraday (2.14.1) sha256=a43cceedc1e39d188f4d2cdd360a8aaa6a11da0c407052e426ba8d3fb42ef61c
   faraday-net_http (3.4.2) sha256=f147758260d3526939bf57ecf911682f94926a3666502e24c69992765875906c
   ffi (1.17.3-aarch64-linux-gnu) sha256=28ad573df26560f0aedd8a90c3371279a0b2bd0b4e834b16a2baa10bd7a97068
@@ -763,7 +771,7 @@ CHECKSUMS
   thruster (0.1.20-x86_64-linux) sha256=d579f252bf67aee6ba6d957e48f566b72e019d7657ba2f267a5db1e4d91d2479
   tilt (2.7.0) sha256=0d5b9ba69f6a36490c64b0eee9f6e9aad517e20dcc848800a06eb116f08c6ab3
   timeout (0.6.1) sha256=78f57368a7e7bbadec56971f78a3f5ecbcfb59b7fcbb0a3ed6ddc08a5094accb
-  tramway (3.0.3.3) sha256=c44f5667417ec9d2213b136ac07e01f5e7d9adffdb94d4ace4193848b2bc9ac8
+  tramway (3.0.3.3)
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   turbo-rails (2.0.23) sha256=ee0d90733aafff056cf51ff11e803d65e43cae258cc55f6492020ec1f9f9315f
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b

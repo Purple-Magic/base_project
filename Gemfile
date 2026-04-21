@@ -46,6 +46,9 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
+  # Generate realistic demo content for seeds and tests
+  gem "faker"
+
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
 
@@ -81,7 +84,8 @@ gem "pg", "~> 1.6"
 gem "omniauth-auth0", "~> 3.0"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 
-gem "tramway", "3.0.3.3"
+# gem "tramway", "3.0.3.3"
+gem "tramway", path: 'vendor/tramway'
 
 # Tramway dependencies
 gem "kaminari"

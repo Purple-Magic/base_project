@@ -1,4 +1,6 @@
 class ChatDecorator < Tramway::BaseDecorator
+  MESSAGES_PER_PAGE = 20
+
   delegate_attributes :created_at, :name, :updated_at, :users, :uuid
 
   def title
@@ -13,8 +15,8 @@ class ChatDecorator < Tramway::BaseDecorator
     users.size
   end
 
-  def transcript_messages
-    object.messages.map do |message|
+  def transcript_messages(page: 1)
+    paginated_messages(page).map do |message|
       {
         id: message.uuid,
         type: message.sender_id == object.creator_id ? :sent : :received,
@@ -25,6 +27,14 @@ class ChatDecorator < Tramway::BaseDecorator
   end
 
   private
+
+  def paginated_messages(page)
+    Chats::Message.where(chat: object)
+                  .order(created_at: :desc, id: :desc)
+                  .page(page)
+                  .per(MESSAGES_PER_PAGE)
+                  .reverse
+  end
 
   def ordered_users
     users.sort_by { |user| [user.first_name.to_s, user.last_name.to_s] }

@@ -1,13 +1,13 @@
-= tramway_container do
-  .space-y-8.py-10
+= tramway_container class: 'h-full min-h-0 max-h-[1200px]' do
+  .flex.h-full.min-h-0.flex-col.gap-8.py-10
     = tramway_title text: @chat.title
 
     %p.text-sm.text-slate-600
       = pluralize(@chat.members_count, 'member')
       in this chat
 
-    .grid.gap-8{ class: 'lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]' }
-      .space-y-4
+    .grid.flex-1.min-h-0.gap-8{ class: 'lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]' }
+      .flex.min-h-0.flex-col.gap-4
         .rounded-3xl.border.border-slate-200.bg-white.p-5.shadow-sm
           %p.text-xs.font-semibold.uppercase.tracking-widest.text-slate-500 Chat UUID
           %p.mt-2.break-all.font-mono.text-sm.text-slate-800= @chat.uuid
@@ -15,10 +15,11 @@
             Created
             = l(@chat.created_at, format: :long)
 
-        = tramway_chat chat_id: @chat.uuid,
-          messages: @chat.transcript_messages,
-          message_form: @message_form,
-          send_message_path: chats_messages_path
+        .flex-1.min-h-0.overflow-hidden{ data: { controller: 'chat', 'chat-chat-id-value': @chat.uuid, 'chat-messages-path-value': chats_messages_path, 'chat-next-page-value': 2 } }
+          = tramway_chat chat_id: @chat.uuid,
+            messages: @chat.transcript_messages(page: 1),
+            message_form: @message_form,
+            send_message_path: chats_messages_path
 
       .space-y-4
         %h2.text-lg.font-semibold.text-slate-900 Members

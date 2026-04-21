@@ -22,7 +22,7 @@
     = stylesheet_link_tag "tailwind", "data-turbo-track": "reload"
     = javascript_importmap_tags
 
-  %body
+  %body.min-h-dvh.flex.flex-col
     = tramway_navbar title: 'Chats', title_link: root_path, with_entities: false do |nav|
       - nav.left do
         - nav.item 'Browse chats', root_path
