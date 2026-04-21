@@ -28,22 +28,18 @@ describe 'Chats::MessagesController#index', type: :request do
     end
   end
 
-  it 'prepends the requested older page as a turbo stream' do
+  it 'returns ok when the requested older page is broadcast' do
     get chats_messages_path,
       params: { chat_id: chat.uuid, page: 2 },
       headers: headers
 
     expect(response).to have_http_status(:ok)
-    expect(response.media_type).to eq(Mime[:turbo_stream].to_s)
-    expect(response.body).to include('<turbo-stream action="prepend" target="messages">')
-    expect(response.body).to include('Message 1')
-    expect(response.body).to include('Message 5')
-    expect(response.body).not_to include('Message 6')
+    expect(response.body).to be_blank
   end
 
   it 'returns no content when there are no more history pages' do
     get chats_messages_path,
-      params: { chat_id: chat.uuid, page: 3 },
+      params: { chat_id: chat.uuid, page: 99 },
       headers: headers
 
     expect(response).to have_http_status(:no_content)

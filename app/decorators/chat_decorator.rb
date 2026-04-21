@@ -1,5 +1,5 @@
 class ChatDecorator < Tramway::BaseDecorator
-  MESSAGES_PER_PAGE = 20
+  MESSAGES_PER_PAGE = 10
 
   delegate_attributes :created_at, :name, :updated_at, :users, :uuid
 

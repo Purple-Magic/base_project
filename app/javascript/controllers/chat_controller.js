@@ -1,5 +1,4 @@
 import { Controller } from "@hotwired/stimulus"
-import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
   static values = {
@@ -71,15 +70,7 @@ export default class extends Controller {
         throw new Error(`Failed to load messages: ${response.status}`)
       }
 
-      const html = await response.text()
-
-      if (html.length === 0) {
-        this.hasMoreMessages = false
-        return
-      }
-
-      Turbo.renderStreamMessage(html)
-
+      await this.waitForMessagesUpdate()
       await this.restoreScrollPosition(previousScrollHeight, previousScrollTop)
       this.nextPageValue += 1
     } finally {
@@ -94,6 +85,26 @@ export default class extends Controller {
 
     this.messagesElement.scrollTop =
       this.messagesElement.scrollHeight - previousScrollHeight + previousScrollTop
+  }
+
+  waitForMessagesUpdate() {
+    return new Promise((resolve) => {
+      let resolved = false
+
+      const finish = () => {
+        if (resolved) return
+
+        resolved = true
+        observer.disconnect()
+        clearTimeout(timeoutId)
+        resolve()
+      }
+
+      const observer = new MutationObserver(finish)
+      observer.observe(this.messagesElement, { childList: true })
+
+      const timeoutId = setTimeout(finish, 1500)
+    })
   }
 
   nextFrame() {
