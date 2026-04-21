@@ -1,6 +1,6 @@
 class Chats::MessagesController < ApplicationController
   def index
-    chat = Chat.find_by!(uuid: params[:chat_id])
+    chat = Chat.find_by(uuid: params[:chat_id])
 
     messages = tramway_decorate(chat).transcript_messages(page: params[:page])
 
