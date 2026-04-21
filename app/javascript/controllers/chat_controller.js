@@ -46,10 +46,9 @@ export default class extends Controller {
 
     this.isLoading = true
 
-    const previousScrollHeight = this.messagesElement.scrollHeight
-    const previousScrollTop = this.messagesElement.scrollTop
-
     this.messagesElement.dataset.preserveScroll = "true"
+    const anchorData = this.captureAnchor()
+    const pendingUpdate = this.waitForMessagesUpdate(anchorData)
 
     try {
       const response = await fetch(
@@ -62,16 +61,17 @@ export default class extends Controller {
       )
 
       if (response.status === 204) {
+        pendingUpdate.cancel()
         this.hasMoreMessages = false
         return
       }
 
       if (!response.ok) {
+        pendingUpdate.cancel()
         throw new Error(`Failed to load messages: ${response.status}`)
       }
 
-      await this.waitForMessagesUpdate()
-      await this.restoreScrollPosition(previousScrollHeight, previousScrollTop)
+      await pendingUpdate.promise
       this.nextPageValue += 1
     } finally {
       delete this.messagesElement.dataset.preserveScroll
@@ -79,32 +79,65 @@ export default class extends Controller {
     }
   }
 
-  async restoreScrollPosition(previousScrollHeight, previousScrollTop) {
-    await this.nextFrame()
-    await this.nextFrame()
+  captureAnchor() {
+    const containerTop = this.messagesElement.getBoundingClientRect().top
+    const children = Array.from(this.messagesElement.children)
 
-    this.messagesElement.scrollTop =
-      this.messagesElement.scrollHeight - previousScrollHeight + previousScrollTop
+    const element = children.find((child) => {
+      return child.getBoundingClientRect().bottom > containerTop
+    })
+
+    if (!element) return null
+
+    return {
+      element,
+      topOffset: element.getBoundingClientRect().top - containerTop
+    }
   }
 
-  waitForMessagesUpdate() {
-    return new Promise((resolve) => {
-      let resolved = false
+  waitForMessagesUpdate(anchorData) {
+    let resolved = false
+    let observer = null
+    let timeoutId = null
+    let resolvePromise = null
+
+    const promise = new Promise((resolve) => {
+      resolvePromise = resolve
 
       const finish = () => {
         if (resolved) return
 
         resolved = true
-        observer.disconnect()
-        clearTimeout(timeoutId)
+        observer?.disconnect()
+        if (timeoutId) clearTimeout(timeoutId)
         resolve()
       }
 
-      const observer = new MutationObserver(finish)
+      observer = new MutationObserver(() => {
+        if (anchorData?.element?.isConnected) {
+          const containerTop = this.messagesElement.getBoundingClientRect().top
+          const newTopOffset = anchorData.element.getBoundingClientRect().top - containerTop
+
+          this.messagesElement.scrollTop += newTopOffset - anchorData.topOffset
+        }
+
+        finish()
+      })
       observer.observe(this.messagesElement, { childList: true })
 
-      const timeoutId = setTimeout(finish, 1500)
+      timeoutId = setTimeout(finish, 1500)
     })
+
+    return {
+      promise,
+      cancel() {
+        if (resolved) return
+        resolved = true
+        observer?.disconnect()
+        if (timeoutId) clearTimeout(timeoutId)
+        resolvePromise?.()
+      }
+    }
   }
 
   nextFrame() {
