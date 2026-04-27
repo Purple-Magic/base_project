@@ -301,7 +301,7 @@ GEM
     omniauth-oauth2 (1.9.0)
       oauth2 (>= 2.0.2, < 3)
       omniauth (~> 2.0)
-    omniauth-rails_csrf_protection (1.0.2)
+    omniauth-rails_csrf_protection (2.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
     ostruct (0.6.3)
@@ -560,7 +560,7 @@ DEPENDENCIES
   kamal
   kaminari
   omniauth-auth0 (~> 3.0)
-  omniauth-rails_csrf_protection (~> 1.0)
+  omniauth-rails_csrf_protection (~> 2.0)
   pg (~> 1.6)
   propshaft
   pry
@@ -691,7 +691,7 @@ CHECKSUMS
   omniauth (2.1.4) sha256=42a05b0496f0d22e1dd85d42aaf602f064e36bb47a6826a27ab55e5ba608763c
   omniauth-auth0 (3.1.1) sha256=3d9e83377b37394db077cf27082d29ccff93158f072d92fc59f1e88798c6c2b2
   omniauth-oauth2 (1.9.0) sha256=ed15f6d9d20991807ce114cc5b9c1453bce3645b64e51c68c90cff5ff153fee8
-  omniauth-rails_csrf_protection (1.0.2) sha256=1170fd672aff092b9b7ebebc1453559f073ed001e3ce62a1df616e32f8dc5fe0
+  omniauth-rails_csrf_protection (2.0.1) sha256=c6e3204d7e3925bb537cb52d50fdfc9f05293f1a9d87c5d4ab4ca3a39ba8c32d
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   parallel (1.27.0) sha256=4ac151e1806b755fb4e2dc2332cbf0e54f2e24ba821ff2d3dcf86bf6dc4ae130
   parser (3.3.10.2) sha256=6f60c84aa4bdcedb6d1a2434b738fe8a8136807b6adc8f7f53b97da9bc4e9357

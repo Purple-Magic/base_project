@@ -34,7 +34,7 @@ describe 'Users Show Page', type: :feature do
   it 'shows the Auth0 profile after login' do
     visit root_path
 
-    click_on 'Login'
+    click_button 'Login', match: :first
 
     expect(page).to have_current_path(user_path)
     expect(page).to have_content('You have been logged in successfully.')
@@ -43,6 +43,6 @@ describe 'Users Show Page', type: :feature do
     expect(page).to have_content('ada@example.com')
     expect(page).to have_content('auth0|123')
     expect(page).to have_link('Profile', href: user_path)
-    expect(page).to have_button('Logout')
+    expect(page).to have_link('Logout', href: auth0_logout_path)
   end
 end
