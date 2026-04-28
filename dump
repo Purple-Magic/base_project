@@ -26,8 +26,21 @@ printf -v POSTGRES_DB_ARG '%q' "$POSTGRES_DB"
 printf -v POSTGRES_PASSWORD_ARG '%q' "$POSTGRES_PASSWORD"
 printf -v POSTGRES_USER_ARG '%q' "$POSTGRES_USER"
 
+EXCLUDED_TABLES=(
+  "versions"
+  "events"
+  "chats_messages"
+)
+
+PG_DUMP_EXCLUDES=()
+for table in "${EXCLUDED_TABLES[@]}"; do
+  printf -v EXCLUDE_ARG '%q' "--exclude-table-data=${table}"
+  PG_DUMP_EXCLUDES+=("$EXCLUDE_ARG")
+done
+PG_DUMP_EXCLUDES_ARG="${PG_DUMP_EXCLUDES[*]}"
+
 kamal app exec -d "$DESTINATION" -ip "bash -c \"rm -f $BACKUP_PATH\""
-kamal app exec -d "$DESTINATION" -ip "bash -c \"PGPASSWORD=$POSTGRES_PASSWORD_ARG pg_dump --format=custom --encoding=UTF8 --no-owner --exclude-table-data=versions -U $POSTGRES_USER_ARG -h $DB_HOST_ARG $POSTGRES_DB_ARG -f $BACKUP_PATH\""
+kamal app exec -d "$DESTINATION" -ip "bash -c \"PGPASSWORD=$POSTGRES_PASSWORD_ARG pg_dump --format=custom --encoding=UTF8 --no-owner $PG_DUMP_EXCLUDES_ARG -U $POSTGRES_USER_ARG -h $DB_HOST_ARG $POSTGRES_DB_ARG -f $BACKUP_PATH\""
 scp "root@$MAIN_HOST:$REMOTE_BACKUP_PATH" "$LOCAL_BACKUP"
 
 script/dump/restore
