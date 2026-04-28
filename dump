@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DESTINATION=${1:-}
+
+if [[ -z "$DESTINATION" ]]; then
+  echo "Usage: ./dump <destination>"
+  exit 1
+fi
+
+if ! SECRETS_ENV=$(ruby script/dump/prepare_secrets.rb "$DESTINATION" 2>&1); then
+  echo "Error: Failed to prepare secrets." >&2
+  echo "$SECRETS_ENV" >&2
+  exit 1
+fi
+
+eval "$SECRETS_ENV"
+export MAIN_HOST DB_HOST POSTGRES_DB POSTGRES_PASSWORD POSTGRES_USER
+
+BACKUP_PATH=/rails/storage/production_backup.dump
+REMOTE_BACKUP_PATH=/var/lib/docker/volumes/base_project_storage/_data/production_backup.dump
+LOCAL_BACKUP=./production_backup.dump
+printf -v DB_HOST_ARG '%q' "$DB_HOST"
+printf -v POSTGRES_DB_ARG '%q' "$POSTGRES_DB"
+printf -v POSTGRES_PASSWORD_ARG '%q' "$POSTGRES_PASSWORD"
+printf -v POSTGRES_USER_ARG '%q' "$POSTGRES_USER"
+
+EXCLUDED_TABLES=(
+  "versions"
+  "events"
+  "chats_messages"
+)
+
+PG_DUMP_EXCLUDES=()
+for table in "${EXCLUDED_TABLES[@]}"; do
+  printf -v EXCLUDE_ARG '%q' "--exclude-table-data=${table}"
+  PG_DUMP_EXCLUDES+=("$EXCLUDE_ARG")
+done
+PG_DUMP_EXCLUDES_ARG="${PG_DUMP_EXCLUDES[*]}"
+
+kamal app exec -d "$DESTINATION" -ip "bash -c \"rm -f $BACKUP_PATH\""
+kamal app exec -d "$DESTINATION" -ip "bash -c \"PGPASSWORD=$POSTGRES_PASSWORD_ARG pg_dump --format=custom --encoding=UTF8 --no-owner $PG_DUMP_EXCLUDES_ARG -U $POSTGRES_USER_ARG -h $DB_HOST_ARG $POSTGRES_DB_ARG -f $BACKUP_PATH\""
+scp "root@$MAIN_HOST:$REMOTE_BACKUP_PATH" "$LOCAL_BACKUP"
+
+script/dump/restore
+
+RAILS_ENV=test dip rails db:create db:migrate

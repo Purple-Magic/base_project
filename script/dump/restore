@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+require 'open3'
+require 'zlib'
+require 'time'
+require 'fileutils'
+
+puts "\n🚧 Preparing to restore binary backup into local database..."
+
+dump_filename = "production_backup.dump"
+
+# === STEP 2: Drop & recreate the database using SQL ===
+
+puts "🗑 Dropping and recreating database via SQL..."
+
+`dip down`
+`docker volume rm $(basename "$PWD")_postgres`
+`dip rails db:create`
+
+# === STEP 3: Restore the dump using pg_restore ===
+puts "♻️ Restoring binary dump (streaming)..."
+
+restore_cmd = <<~SH.strip
+  cat #{dump_filename} | dip compose exec -T --env PGPASSWORD=postgres postgres \
+  pg_restore -U postgres -h postgres -d base_project_development --clean --if-exists --no-owner
+SH
+
+if system("sh", "-c", restore_cmd)
+  puts "\n✅ Restore complete!"
+else
+  puts "\n❌ Restore failed"
+  exit 1
+end
+
+FileUtils.rm_f(dump_filename) if File.exist?(dump_filename)
+
+Open3.capture3 "dip rails db:migrate"
