@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DESTINATION=${1:-}
+
+if [[ -z "$DESTINATION" ]]; then
+  echo "Usage: ./dump <destination>"
+  exit 1
+fi
+
+if ! SECRETS_ENV=$(ruby script/dump/prepare_secrets.rb 2>&1); then
+  echo "Error: Failed to prepare secrets." >&2
+  echo "$SECRETS_ENV" >&2
+  exit 1
+fi
+
+eval "$SECRETS_ENV"
+
+kamal app exec -d "$DESTINATION" -ip 'bash -c "rm -f /rails/storage/production_backup.dump"'
+# kamal app exec -d "$DESTINATION" -ip "bash -c \"PGPASSWORD=$POSTGRES_PASSWORD pg_dump --format=custom --encoding=UTF8 --no-owner --exclude-table-data=versions --exclude-table-data=events -U $POSTGRES_USER -h $DB_HOST $POSTGRES_DB -f /rails/storage/production_backup.dump\""
+kamal app exec -d "$DESTINATION" -ip "bash -c \"PGPASSWORD=$POSTGRES_PASSWORD pg_dump --format=custom --encoding=UTF8 --no-owner --exclude-table-data=versions -U $POSTGRES_USER -h $DB_HOST $POSTGRES_DB -f /rails/storage/production_backup.dump\""
+scp root@$DB_HOST:/root/files/production_backup.dump ./
+
+bin/dump
+RAILS_ENV=test dip rails db:create db:migrate
