@@ -9,18 +9,29 @@ if [[ -z "$DESTINATION" ]]; then
   exit 1
 fi
 
-if ! SECRETS_ENV=$(ruby script/dump/prepare_secrets.rb 2>&1); then
+if ! SECRETS_ENV=$(ruby script/dump/prepare_secrets.rb "$DESTINATION" 2>&1); then
   echo "Error: Failed to prepare secrets." >&2
   echo "$SECRETS_ENV" >&2
   exit 1
 fi
 
 eval "$SECRETS_ENV"
+export MAIN_HOST DB_HOST POSTGRES_DB POSTGRES_PASSWORD POSTGRES_USER
 
-kamal app exec -d "$DESTINATION" -ip 'bash -c "rm -f /rails/storage/production_backup.dump"'
-# kamal app exec -d "$DESTINATION" -ip "bash -c \"PGPASSWORD=$POSTGRES_PASSWORD pg_dump --format=custom --encoding=UTF8 --no-owner --exclude-table-data=versions --exclude-table-data=events -U $POSTGRES_USER -h $DB_HOST $POSTGRES_DB -f /rails/storage/production_backup.dump\""
-kamal app exec -d "$DESTINATION" -ip "bash -c \"PGPASSWORD=$POSTGRES_PASSWORD pg_dump --format=custom --encoding=UTF8 --no-owner --exclude-table-data=versions -U $POSTGRES_USER -h $DB_HOST $POSTGRES_DB -f /rails/storage/production_backup.dump\""
-scp root@$DB_HOST:/root/files/production_backup.dump ./
+BACKUP_PATH=/rails/storage/production_backup.dump
+LOCAL_BACKUP=./production_backup.dump
+printf -v DB_HOST_ARG '%q' "$DB_HOST"
+printf -v POSTGRES_DB_ARG '%q' "$POSTGRES_DB"
+printf -v POSTGRES_PASSWORD_ARG '%q' "$POSTGRES_PASSWORD"
+printf -v POSTGRES_USER_ARG '%q' "$POSTGRES_USER"
 
-bin/dump
+kamal app exec -d "$DESTINATION" -ip "bash -c \"rm -f $BACKUP_PATH\""
+kamal app exec -d "$DESTINATION" -ip "bash -c \"PGPASSWORD=$POSTGRES_PASSWORD_ARG pg_dump --format=custom --encoding=UTF8 --no-owner --exclude-table-data=versions -U $POSTGRES_USER_ARG -h $DB_HOST_ARG $POSTGRES_DB_ARG -f $BACKUP_PATH\""
+scp "root@$MAIN_HOST:/root/files/production_backup.dump" "$LOCAL_BACKUP"
+
+if [[ -x bin/dump ]]; then
+  bin/dump
+else
+  echo "Downloaded $LOCAL_BACKUP"
+fi
 RAILS_ENV=test dip rails db:create db:migrate
