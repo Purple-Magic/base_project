@@ -3,6 +3,7 @@ version: '7.1'
 # Define default environment variables to pass
 # to Docker Compose
 environment:
+  COMPOSE_MENU: false
   RAILS_ENV: development
 
 compose:

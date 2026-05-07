@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount Tramway::Engine, at: '/admin'
+
   root to: "welcome#index"
   get "/auth/auth0/callback", to: "auth0#callback", as: :auth0_callback
   get "/auth/failure", to: "auth0#failure", as: :auth0_failure

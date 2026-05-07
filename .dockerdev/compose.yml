@@ -54,11 +54,16 @@ services:
 
   tailwind:
     <<: *backend
-    command: >
-      /bin/sh -lc "command -v entr >/dev/null || (apt-get update -qq && apt-get install -y entr) &&
-      bin/rails tailwindcss:build &&
-      find config/tailwind.config.js public/*.html app/components app/helpers app/javascript app/views -type f
-      | entr -r bin/rails tailwindcss:build"
+    command: |
+      /bin/sh -lc '
+        command -v entr >/dev/null || (apt-get update -qq && apt-get install -y entr)
+        bin/rails tailwindcss:build &&
+        {
+          test -f config/tailwind.config.js && printf "%s\n" config/tailwind.config.js
+          find app/assets app/helpers app/javascript app/views public -type f 2>/dev/null
+          test ! -d app/components || find app/components -type f
+        } | entr -r bin/rails tailwindcss:build
+      '
 
   postgres:
     image: postgres:17
@@ -103,4 +108,3 @@ volumes:
   rails_cache:
   postgres:
   assets:
-
