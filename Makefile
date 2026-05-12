@@ -24,6 +24,10 @@ define kamal_setup
 	@./terraform/run_kamal_setup.sh $(1)
 endef
 
+define kamal_deploy
+	@./terraform/run_kamal_deploy.sh $(1)
+endef
+
 define kamal_logs
 	@./terraform/run_kamal_logs.sh $(1)
 endef
@@ -112,12 +116,12 @@ create_new_staging:
 deploy_production: terraform_init
 	$(call require_workspace,production)
 	$(call sync_1password_hosts,production)
-	$(call kamal_setup,production)
+	$(call kamal_deploy,production)
 
 deploy_staging: terraform_init
 	$(call require_workspace,staging)
 	$(call sync_1password_hosts,staging)
-	$(call kamal_setup,staging)
+	$(call kamal_deploy,staging)
 
 logs_production: terraform_init
 	$(call require_workspace,production)
