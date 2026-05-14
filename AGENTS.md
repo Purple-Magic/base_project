@@ -165,3 +165,5 @@ end
 - Add a component for the state buttons.
 - Render it via `show_header_content` for the show page and an actions column for the index page.
 ## End of Tramway AGENTS.md
+
+If you are Codex, use the tramway-skill skill for Tramway/Rails work in this project. If tramway-skill is not installed, install it from https://github.com/Purple-Magic/tramway-skill/.
