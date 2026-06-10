@@ -84,7 +84,7 @@ gem "pg", "~> 1.6"
 gem "omniauth-auth0", "~> 3.0"
 gem "omniauth-rails_csrf_protection", "~> 2.0"
 
-gem "tramway", "3.1.1.2"
+gem "tramway", "3.1.2.3"
 
 # Tramway dependencies
 gem "kaminari"

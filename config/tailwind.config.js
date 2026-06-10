@@ -1,3 +1,5 @@
+const defaultTheme = require("tailwindcss/defaultTheme")
+
 module.exports = {
   safelist: [
     // === Navbar ===
@@ -24,6 +26,71 @@ module.exports = {
     'md:justify-between',
     'pt-16',
     'min-h-8',
+    'bg-zinc-950',
+    '!bg-zinc-950',
+    'bg-zinc-950/95',
+    'bg-zinc-950/80',
+    'bg-zinc-900',
+    'bg-zinc-800',
+    'bg-zinc-900/80',
+    'border-zinc-800',
+    'text-zinc-50',
+    '!text-zinc-50',
+    'text-zinc-100',
+    'text-zinc-200',
+    'text-zinc-400',
+    'text-zinc-500',
+    'placeholder:text-zinc-500',
+    'hover:bg-zinc-800',
+    'hover:bg-zinc-900',
+    'hover:text-zinc-50',
+    'focus-visible:ring-zinc-300',
+    'focus-visible:ring-zinc-400',
+    'focus-visible:ring-offset-zinc-950',
+    'ring-zinc-800',
+    'peer-disabled:cursor-not-allowed',
+    'peer-disabled:opacity-70',
+    'supports-[backdrop-filter]:bg-zinc-950/80',
+    'backdrop-blur',
+    'shadow-lg',
+    'shadow-sm',
+    'w-fit',
+    'text-base',
+    'text-sm',
+    'rounded-md',
+    'rounded-sm',
+    'border-b',
+    'border-r',
+    'border-t',
+    'border',
+    'gap-4',
+    'gap-1',
+    'gap-2',
+    'grid-cols-1',
+    'grid',
+    'px-4',
+    'py-3',
+    'py-4',
+    'py-6',
+    'p-2',
+    'inset-0',
+    'top-4',
+    'right-4',
+    'flex-col',
+    'items-center',
+    'justify-between',
+    'justify-center',
+    'transition-colors',
+    'rounded-md',
+    'truncate',
+    'rounded-b-none',
+    'overflow-x-hidden',
+    'cursor-not-allowed',
+    'mx-auto',
+    'my-4',
+    'h-8',
+    'w-8',
+    'disabled:cursor-not-allowed',
 
     // === Entities Index Page ===
     'md:mt-8',
@@ -37,22 +104,29 @@ module.exports = {
     'rounded-tr-md',
     'bg-white',
     'bg-gray-50',
+    'bg-gray-800/60',
     'bg-blue-600',
+    'bg-blue-500',
     'shadow-sm',
     'border-t',
+    'border-gray-200',
+    'border-gray-300',
+    'border-gray-600',
     'border-gray-700',
     'bg-gray-800',
-    'bg-gray-800/60',
     'bg-gray-900',
-    'bg-blue-500',
     'hover:bg-blue-400',
     'text-gray-100',
     'text-gray-400',
     'text-blue-400',
     'placeholder:text-gray-400',
+    'focus:border-gray-300',
     'focus:border-blue-400',
+    'focus:border-blue-500',
     'focus:ring-blue-500/30',
+    'focus:ring-blue-500',
     'ring-gray-700',
+    'ring-1',
     'h-8',
     'flex-1',
     'gap-2',
@@ -77,7 +151,6 @@ module.exports = {
     'break-all',
     'animate-spin',
     'placeholder:text-gray-400',
-    'focus:border-blue-500',
     'focus:outline-none',
     'focus:ring-2',
     'focus:ring-blue-200',
@@ -117,6 +190,31 @@ module.exports = {
     'md:block',
     'first:block',
     'rounded-t-xl',
+    'border-zinc-800',
+    'bg-zinc-950',
+    'bg-zinc-900',
+    'text-zinc-100',
+    'text-zinc-400',
+    'hover:bg-zinc-900',
+    'border-b',
+    'border-r',
+    'grid-cols-1',
+    'gap-4',
+    'px-6',
+    'py-4',
+    'font-medium',
+    'w-full',
+
+    // === Table row preview panel ===
+    'bottom-0',
+    'left-0',
+    'right-0',
+    'h-1/2',
+    'bg-gray-100',
+    'animate-roll-up',
+    'hover:text-gray-700',
+    'pt-4',
+    'md:hidden',
 
     // === Title Component ===
     'md:text-4xl',
@@ -125,6 +223,67 @@ module.exports = {
     'hidden',
     'text-xl',
     'font-bold',
+    'prose',
+    'prose-invert',
+    'max-w-none',
+
+    // === Button base shell ===
+    'inline-flex',
+    'rounded-md',
+    'font-medium',
+    'ring-offset-background',
+    'transition-colors',
+    'focus-visible:outline-none',
+    'focus-visible:ring-2',
+    'focus-visible:ring-ring',
+    'focus-visible:ring-offset-2',
+    'disabled:pointer-events-none',
+    'disabled:opacity-50',
+    'h-10',
+
+    'hover:bg-zinc-200',
+    'bg-zinc-50',
+    'text-zinc-950',
+    'bg-zinc-950',
+    'text-zinc-50',
+    'border-zinc-800',
+    'hover:bg-zinc-800',
+
+    'hover:bg-green-900',
+    'bg-green-900/30',
+    'text-green-400',
+
+    'hover:bg-red-900',
+    'bg-red-900/30',
+    'text-red-400',
+
+    'hover:bg-gray-900',
+    'bg-gray-900/30',
+    'text-gray-400',
+
+    'hover:bg-blue-900',
+    'bg-blue-900/30',
+    'text-blue-400',
+
+    'hover:bg-zinc-900',
+    'bg-zinc-900/30',
+    'text-zinc-400',
+
+    'hover:bg-orange-900',
+    'bg-orange-900/30',
+    'text-orange-400',
+
+    'hover:bg-violet-900',
+    'bg-violet-900/30',
+    'text-violet-400',
+
+    'hover:bg-indigo-900',
+    'bg-indigo-900/30',
+    'text-indigo-400',
+
+    'hover:bg-yellow-900',
+    'bg-yellow-900/30',
+    'text-yellow-400',
 
     // === Grid templates used for configurable layouts ===
     'grid',
@@ -155,6 +314,8 @@ module.exports = {
     'align-center',
     'justify-center',
     'min-h-dvh',
+    'bg-zinc-950',
+    'text-zinc-50',
 
     // === Flexbox layout utilities ===
     'flex',
@@ -162,6 +323,7 @@ module.exports = {
     'flex-wrap',
     'flex-row-reverse',
     'flex-auto',
+    'flex-none',
     'flex-initial',
     'justify-between',
     'justify-end',
@@ -177,6 +339,11 @@ module.exports = {
     'w-fit',
     'w-8',
     'min-w-96',
+    'min-w-0',
+    'min-h-10',
+    'min-h-12',
+    'min-h-15',
+    'min-h-40',
     'max-w-full',
 
     // === Spacing utilities ===
@@ -208,6 +375,28 @@ module.exports = {
     'placeholder-gray-500',
 
     // === Button and badge helpers ===
+    'peer',
+    'peer-hover:visible',
+    'peer-hover:opacity-100',
+    'group',
+    'group-hover:visible',
+    'group-hover:opacity-100',
+    'open:block',
+    'bottom-full',
+    'left-1/2',
+    '-translate-x-1/2',
+    'z-50',
+    'w-max',
+    'min-w-40',
+    'max-w-sm',
+    'invisible',
+    'opacity-0',
+    'transition-opacity',
+    'pointer-events-none',
+    'leading-5',
+    'list-none',
+    'cursor-pointer',
+    'py-1.5',
     'rounded',
     'rounded-full',
     'rounded-xl',
@@ -218,72 +407,32 @@ module.exports = {
     'h-fit',
     'gap-1',
     'h-10',
+    'px-2.5',
+    'py-0.5',
     'shadow-md',
     'shadow-inner',
     'shadow-lg',
+    'shadow',
     'h-12',
+    'border-transparent',
+    'focus:ring-2',
+    'focus:ring-zinc-400',
+    'focus:ring-offset-2',
+    'focus:ring-offset-zinc-950',
+    'hover:bg-zinc-800/80',
+    'border-green-800',
+    'border-orange-800',
+    'border-red-800',
+    'border-violet-800',
+    'border-indigo-800',
+    'border-yellow-800',
+    'border-blue-800',
+    'border-gray-800',
 
-    // === Button color presets ===
-    'bg-green-100',
-    'bg-green-200',
-    'bg-green-700',
-    'hover:bg-green-200',
-    'hover:bg-green-300',
-    'hover:bg-green-800',
-
-    'bg-red-100',
-    'bg-red-200',
-    'bg-red-700',
-    'hover:bg-red-200',
-    'hover:bg-red-300',
-    'hover:bg-red-800',
-
-    'bg-blue-100',
-    'bg-blue-200',
-    'bg-blue-700',
-    'hover:bg-blue-200',
-    'hover:bg-blue-300',
-    'hover:bg-blue-800',
-
-    'bg-orange-100',
-    'bg-orange-200',
-    'bg-orange-700',
-    'hover:bg-orange-200',
-    'hover:bg-orange-300',
-    'hover:bg-orange-800',
-
-    'bg-zinc-100',
-    'bg-zinc-200',
-    'bg-zinc-700',
-    'hover:bg-zinc-200',
-    'hover:bg-zinc-300',
-    'hover:bg-zinc-800',
-
-    'bg-violet-100',
-    'bg-violet-200',
-    'bg-violet-700',
-    'hover:bg-violet-200',
-    'hover:bg-violet-300',
-    'hover:bg-violet-800',
-
-    'bg-indigo-100',
-    'bg-indigo-200',
-    'bg-indigo-700',
-    'hover:bg-indigo-200',
-    'hover:bg-indigo-300',
-    'hover:bg-indigo-800',
-
-    'bg-yellow-100',
-    'bg-yellow-200',
-    'bg-yellow-700',
-    'hover:bg-yellow-200',
-    'hover:bg-yellow-300',
-    'hover:bg-yellow-800',
-
-    'bg-teal-100',
-    'bg-teal-900',
-    'bg-purple-300',
-    'text-purple-700',
+    // === Shadcn UI button styles ===
+    'bg-green-600',
+    'hover:bg-green-400',
+    'text-green-800',
 
     // === Button Disabled state ===
     'bg-gray-200',
@@ -333,6 +482,10 @@ module.exports = {
     'bg-red-100',
     'text-red-800',
     'space-x-2',
+    'h-5',
+    'w-5',
+    'rounded-full',
+    'mb-0',
 
     // === Tramway select dropdown positioning ===
     'absolute',
@@ -356,6 +509,15 @@ module.exports = {
     'leading-6',
     'leading-none',
     'appearance-none',
+    'peer',
+    'h-4',
+    'w-4',
+    'text-current',
+    'ring-offset-zinc-950',
+    'data-[state=checked]:border-zinc-50',
+    'data-[state=checked]:bg-zinc-50',
+    'data-[state=checked]:text-zinc-950',
+    'border-zinc-50',
     'outline-none',
     'h-full',
     'm-1',
@@ -368,12 +530,12 @@ module.exports = {
     'h-15',
     'h-12',
     'h-10',
-    'w-2',
-    'h-2',
-    'w-4',
-    'h-4',
-    'w-6',
-    'h-6',
+    'min-w-2',
+    'min-h-2',
+    'min-w-4',
+    'min-h-4',
+    'min-w-6',
+    'min-h-6',
     'px-2',
     'py-1',
     'flex-nowrap',
@@ -383,96 +545,128 @@ module.exports = {
 
     // === Flash message styles ===
     'fixed',
+    'top-4',
     'right-4',
     'z-50',
-    'space-y-2',
+    'flex',
+    'w-full',
+    'max-w-sm',
+    'flex-col',
+    'gap-2',
     'flash',
     'opacity-100',
-    'text-white',
+    'pointer-events-auto',
+    'rounded-md',
+    'border',
+    'border-zinc-800',
+    'border-green-800',
+    'border-blue-800',
+    'border-orange-800',
+    'border-red-800',
+    'border-violet-800',
+    'border-indigo-800',
+    'border-yellow-800',
+    'bg-zinc-950',
     'px-4',
-    'py-2',
-    'rounded',
-    'shadow',
-    'text-black',
+    'py-3',
+    'text-sm',
+    'font-medium',
+    'leading-6',
+    'text-zinc-50',
+    'text-green-400',
+    'text-blue-400',
+    'text-orange-400',
+    'text-red-400',
+    'text-violet-400',
+    'text-indigo-400',
+    'text-yellow-400',
+    'shadow-lg',
     'pointer-events-none'
-  
-
-  'bottom-0',
-
-  'left-0',
-
-  'right-0',
-
-  'h-1/2',
-
-  'bg-gray-100',
-
-  'animate-roll-up',
-
-  'hover:text-gray-700',
-
-  'pt-4',
-
-  'md:hidden',
-
-  'h-5',
-
-  'w-5',
-
-  'mb-0',
-
-  'min-w-2',
-
-  'min-h-2',
-
-  'min-w-4',
-
-  'min-h-4',
-
-  'min-w-6',
-
-  'min-h-6',
-
-'bg-zinc-950',
-
-'bg-zinc-950/95',
-
-'bg-zinc-950/80',
-
-'bg-zinc-900',
-
-'bg-zinc-800',
-
-'bg-zinc-900/80',
-
-'border-zinc-800',
-
-'text-zinc-50',
-
-'text-zinc-100',
-
-'text-zinc-200',
-
-'text-zinc-400',
-
-'text-zinc-500',
-
-'placeholder:text-zinc-500',
-
-'hover:bg-zinc-900',
-
-'hover:text-zinc-50',
-
-'focus-visible:ring-zinc-300',
-
-'focus-visible:ring-zinc-400',
-
-'focus-visible:ring-offset-zinc-950',
-
-'ring-zinc-800',
-
-'peer-disabled:cursor-not-allowed',
-
-'peer-disabled:opacity-70',
-],
+  ],
+  theme: {
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        attention: {
+          DEFAULT: "var(--yellow-50)",
+          foreground: "hsl(var(--attention-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
+    },
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+  },
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/aspect-ratio"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/container-queries"),
+  ],
 }

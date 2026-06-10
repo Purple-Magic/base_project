@@ -11,4 +11,10 @@ Rails.application.routes.draw do
   resource :user, only: :show
 
   get "up" => "rails/health#show", as: :rails_health_check
+
+  if Rails.env.development?
+    post "/dev/login", to: "dev/sessions#create", as: :dev_login
+  end
+
+  mount Tramway::Engine, at: "/"
 end
