@@ -92,4 +92,4 @@ gem "view_component"
 gem 'dry-initializer'
 gem 'dry-monads'
 
-gem "tailwindcss-rails", "~> 4.4"
+gem "tailwindcss-rails", "~> 4.5"
