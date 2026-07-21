@@ -84,7 +84,8 @@ gem "pg", "~> 1.6"
 gem "omniauth-auth0", "~> 3.0"
 gem "omniauth-rails_csrf_protection", "~> 2.0"
 
-gem "tramway", "3.1.2.3"
+# gem "tramway", "3.1.2.6"
+gem "tramway", path: 'vendor/tramway'
 
 # Tramway dependencies
 gem "kaminari"
@@ -93,3 +94,4 @@ gem 'dry-initializer'
 gem 'dry-monads'
 
 gem "tailwindcss-rails", "~> 4.4"
+gem "enumerize"
