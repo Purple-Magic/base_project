@@ -39,5 +39,16 @@ describe Auth0Controller, type: :controller do
       )
       expect(session[:userinfo]).to be_nil
     end
+
+    it 'supports logging out with a delete request' do
+      session[:userinfo] = { 'sub' => 'auth0|123' }
+
+      delete :logout
+
+      expect(response).to redirect_to(
+        'https://test.auth0.local/v2/logout?client_id=test-client-id&returnTo=http%3A%2F%2Ftest.host%2F'
+      )
+      expect(session[:userinfo]).to be_nil
+    end
   end
 end

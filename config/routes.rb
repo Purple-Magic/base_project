@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get "/auth/auth0/callback", to: "auth0#callback", as: :auth0_callback
   get "/auth/failure", to: "auth0#failure", as: :auth0_failure
   get "/auth/logout", to: "auth0#logout", as: :auth0_logout
+  delete "/auth/logout", to: "auth0#logout"
   namespace :chats do
     resources :messages, only: %i[index create]
   end

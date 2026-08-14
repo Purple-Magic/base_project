@@ -36,7 +36,7 @@
           - if current_user_name.present?
             - nav.item current_user_name, user_path
           - nav.item 'Profile', user_path
-          - nav.item 'Logout', auth0_logout_path, method: :get, data: { turbo: false }
+          - nav.item 'Logout', auth0_logout_path, method: :delete, data: { turbo: false }
         - else
           - nav.item 'Login', '/auth/auth0', method: :post, data: { turbo: false }
           - if Rails.env.development?

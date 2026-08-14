@@ -43,6 +43,11 @@ describe 'Users Show Page', type: :feature do
     expect(page).to have_content('ada@example.com')
     expect(page).to have_content('auth0|123')
     expect(page).to have_link('Profile', href: user_path)
-    expect(page).to have_link('Logout', href: auth0_logout_path)
+    expect(page).to have_button('Logout')
+
+    click_button 'Logout', match: :first
+
+    expect(page.current_url).to include('/v2/logout')
+    expect(page.current_url).to include('client_id=test-client-id')
   end
 end
