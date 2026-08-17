@@ -26,6 +26,7 @@ x-backend: &backend
   environment: &backend_environment
     <<: *env
     MALLOC_ARENA_MAX: 2
+    PORT: ${PORT:-3000}
     WEB_CONCURRENCY: ${WEB_CONCURRENCY:-1}
     BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
     XDG_DATA_HOME: /${PWD}/tmp/cache
@@ -50,7 +51,7 @@ services:
     <<: *backend
     command: bundle exec rails server -b 0.0.0.0
     ports:
-      - '3000:3000'
+      - '${PORT:-3000}:${PORT:-3000}'
 
   tailwind:
     <<: *backend
@@ -103,4 +104,3 @@ volumes:
   rails_cache:
   postgres:
   assets:
-

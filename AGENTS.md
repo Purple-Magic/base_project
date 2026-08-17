@@ -2,7 +2,7 @@
 
 This file is the entrypoint for task-specific instructions in this repository.
 
-This is the reference project for Tramway skill. So, DO NOT USE tramway skill in this project.
+This is the reference project for Tramway skill. Use tramway-skill by default for Tramway and Rails work in this project.
 
 Load this file first. Do not preload every referenced file. Open only the files that match the current task.
 

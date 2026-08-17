@@ -19,7 +19,9 @@
     %link{rel: "apple-touch-icon", href: "/icon.png"}
 
     = stylesheet_link_tag "application", "data-turbo-track": "reload"
-    = stylesheet_link_tag "tailwind", "data-turbo-track": "reload"
+    - if tailwind_stylesheet_available?
+      = stylesheet_link_tag "tailwind", "data-turbo-track": "reload"
+    = stylesheet_link_tag "font-awesome", "data-turbo-track": "reload"
     = javascript_importmap_tags
     = stylesheet_link_tag "trix", "data-turbo-track": "reload"
     = javascript_include_tag "trix", "data-turbo-track": "reload", defer: true
@@ -38,11 +40,12 @@
           - nav.item 'Profile', user_path
           - nav.item 'Logout', auth0_logout_path, method: :delete, data: { turbo: false }
         - else
-          - nav.item 'Login', '/auth/auth0', method: :post, data: { turbo: false }
-          - if Rails.env.development?
+          - if auth0_configured?
+            - nav.item 'Login', '/auth/auth0', method: :post, data: { turbo: false }
+          - elsif Rails.env.development?
             - nav.item 'Dev Login', dev_login_path, method: :post, data: { turbo: false }
 
-    = tramway_main_container do
+    = tramway_main_container class: 'md:pl-72 transition-all duration-300 ease-in-out' do
       - if flash.any?
         = tramway_flash text: flash[:notice].presence || flash[:alert],
           type: flash[:notice].present? ? :will : :rage,

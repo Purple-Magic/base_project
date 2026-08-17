@@ -94,10 +94,6 @@ else
   else
     message = "Auth0 credentials are not configured. Expected Rails credentials auth0.domain, auth0.client_id or auth0.cliend_id, and auth0.client_secret."
 
-    if Rails.env.test?
-      Rails.logger.warn(message)
-    else
-      raise message
-    end
+    Rails.logger.warn(message)
   end
 end

@@ -15,6 +15,8 @@ class Auth0Controller < ApplicationController
   def logout
     reset_session
 
+    return redirect_to root_path, notice: "You have been logged out." unless auth0_configured?
+
     redirect_to logout_url, allow_other_host: true
   end
 
